@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="" class="brand-link">
+    <a href="{{route('admin.dashboard')}}" class="brand-link">
         <img src="/uploads/setting/{{setting('logo')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8;float:none;min-height:40px;">
         {{-- <span class="brand-text font-weight-light">AdminLTE 3</span> --}}
     </a>
@@ -27,6 +27,37 @@
                       <i class="nav-icon fas fa-tachometer-alt"></i>
                       <p>Dashboard</p>
                     </a>
+                </li>
+
+                <li class="nav-item {{Request::is('admin/level*') ? 'menu-is-opening menu-open':''}}">
+                    <a href="{{route('admin.level')}}" class="nav-link">
+                      <i class="nav-icon fas fa-layer-group"></i>
+                      <p>Level</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {{Request::is('admin/notice*') ? 'menu-is-opening menu-open':''}}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>
+                            Notice
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route('admin.notice.create')}}" class="nav-link {{Request::is('admin/notice/create') ? 'active':''}}">
+                                <i class="fas fa-plus-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('admin.notice.index')}}" class="nav-link {{Request::is('admin/notice') ? 'active':''}}">
+                                <i class="fas fa-bars nav-icon"></i>
+                                <p>List</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item {{Request::is('admin/staff*') ? 'menu-is-opening menu-open':''}}">

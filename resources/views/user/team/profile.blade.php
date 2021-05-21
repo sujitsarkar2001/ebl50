@@ -113,7 +113,7 @@
                                             <span>
                                                 {{-- This Function Define App\Helpers\LevelHelper.php --}}
 
-                                                {{level($user)}}
+                                                {{$user->level}}
                                             </span>
                                         </div>
 

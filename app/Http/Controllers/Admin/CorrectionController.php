@@ -62,7 +62,7 @@ class CorrectionController extends Controller
             'subject'    => $contact->subject,
             'body'       => $request->input('message')
         ];
-
+        
         Mail::send('admin.connection.contact-email', $data, function($mail) use ($data)
         {
             $mail->from($data['from_email'], $data['name'])

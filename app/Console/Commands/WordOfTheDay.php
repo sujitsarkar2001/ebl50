@@ -42,9 +42,9 @@ class WordOfTheDay extends Command
 
         foreach ($users as $user) {
 
-            $level = level($user);
+            // $level = level($user);
 
-            if ($level == 'Elite') {
+            if ($user->level == 'Elite') {
                 $amount = setting('level_one_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -59,7 +59,7 @@ class WordOfTheDay extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             } 
-            else if ($level == 'Executive Elite') {
+            else if ($user->level == 'Executive Elite') {
                 $amount = setting('level_two_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -74,7 +74,7 @@ class WordOfTheDay extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'Executive') {
+            else if ($user->level == 'Executive') {
                 $amount = setting('level_three_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -89,7 +89,6 @@ class WordOfTheDay extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            
         }
 
         // Update Video Status

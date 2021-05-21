@@ -20,6 +20,8 @@ class SettingController extends Controller
         $this->validate($request, [
             'single_package'             => 'string|numeric',
             'share_package'              => 'string|numeric',
+            'withdraw_limit'             => 'string|numeric',
+            'exchange_limit'             => 'string|numeric',
             'share_package_bonus'        => 'string|numeric',
             'money_exchange_charge'      => 'string|numeric',
             'withdraw_charge_in_bank'    => 'string|numeric',
@@ -44,6 +46,8 @@ class SettingController extends Controller
             
         Setting::updateOrCreate(['name' => 'single_package'], ['value' => $request->get('single_package')]);
         Setting::updateOrCreate(['name' => 'single_package'], ['value' => $request->get('single_package')]);
+        Setting::updateOrCreate(['name' => 'withdraw_limit'], ['value' => $request->get('withdraw_limit')]);
+        Setting::updateOrCreate(['name' => 'exchange_limit'], ['value' => $request->get('exchange_limit')]);
         Setting::updateOrCreate(['name' => 'share_package'], ['value' => $request->get('share_package')]);
         Setting::updateOrCreate(['name' => 'share_package_bonus'], ['value' => $request->get('share_package_bonus')]);
         Setting::updateOrCreate(['name' => 'money_exchange_charge'], ['value' => $request->get('money_exchange_charge')]);

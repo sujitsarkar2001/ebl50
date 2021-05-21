@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GenerationIncome;
 use App\Models\IncomeBalance;
 use App\Models\LevelIncome;
+use App\Models\Notice;
 use App\Models\ShopBalance;
 use App\Models\SponsorIncome;
 use App\Models\User;
@@ -61,6 +62,8 @@ class DashboardController extends Controller
         $month_level_income = LevelIncome::where('user_id', Auth::id())->where('month', date('F'))->where('year', date('Y'))->sum('amount');
         $total_level_income = LevelIncome::where('user_id', Auth::id())->sum('amount');
 
+        $noticed = Notice::where('status', true)->get();
+
         return view('user.dashboard', compact(
             'income_balance',
             'shop_balance',
@@ -77,7 +80,8 @@ class DashboardController extends Controller
             'month_generation_income',
             'total_generation_income',
             'month_level_income',
-            'total_level_income'
+            'total_level_income',
+            'noticed'
         ));
     }
 }

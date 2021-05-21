@@ -40,8 +40,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'sponsor_id'          => 'required|numeric',
-            'direction'           => 'required|numeric',
+            'sponsor_id'          => 'nullable|numeric',
+            'placement_id'        => 'nullable|numeric',
+            'direction'           => 'nullable|numeric',
             'name'                => 'required|string|max:50',
             'username'            => 'required|string|max:25|unique:users,username',
             'email'               => 'required|string|email|max:255',
@@ -66,83 +67,126 @@ class UserController extends Controller
             'nagad'               => 'nullable|digits:11',
             'rocket'              => 'nullable|digits:11'
         ]);
-
         // Check Sponsor ID
-        $sponsor = User::where('referer_id', $request->sponsor_id)->first();
         
-        if ($sponsor) {
+        if ($request->sponsor_id != null) {
+            $sponsor    = User::where('referer_id', $request->sponsor_id)->first();
             
-            $child        = $sponsor;
-            $placement_id = $sponsor->id;
+            if ($sponsor) {
+                $sponsor_id = $sponsor->id;
+                if ($request->placement_id != null) {
 
-            while(true){
-                $child = $child->children()->where(['direction' => $request->direction])->first();
-                if ($child) {
-                    $placement_id = $child->id;
-                }  else { 
-                    break;
+                    if ($request->direction == null) {
+                        notify()->warning("Direction is not accept to null value", "Wrong");
+                        return back();
+                    }
+                    $placement = User::where('referer_id', $request->placement_id)->first();
+    
+                    if ($placement) {
+                        $activeUser = $placement;
+
+                        for ($i = 0; $i < 11 && $activeUser; $i++)
+                        {
+                            if ($sponsor->id == $activeUser->sponsor_id) {
+                                $child = $placement;
+                                $placement_id = $placement->id;
+                                while(true){
+                                    $child = $child->children()->where(['direction' => $request->direction])->first();
+                                    
+                                    if ($child) {
+                                        $placement_id = $child->id;
+                                    } else { 
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $activeUser = $activeUser->sponsor; 
+                            }
+                        }
+                        if (!isset($placement_id)) {
+                            notify()->warning("Placement id does not match", "Wrong");
+                            return back();
+                        }
+                    }
+                    else {
+                        notify()->warning("Placement id not found", "Wrong");
+                        return back();
+                    }
+                    
+                } 
+                else {
+                    $child = $sponsor;
+                    $placement_id = $sponsor->id;
+                    while(true){
+                        $child = $child->children()->where(['direction' => $request->direction])->first();
+                        if ($child) {
+                            $placement_id = $child->id;
+                        }  else { 
+                            break;
+                        }
+                    }
                 }
-                
+            } else {
+                notify()->warning("Sponsor id not available, please try to correct sponsor id", "Wrong");
+                return back(); 
             }
-            
-            // Insert data to users table
-            $user = User::create([
-                'placement_id'     => $placement_id,
-                'sponsor_id'       => $sponsor->id,
-                'direction'        => $request->direction,
-                'name'             => $request->name,
-                'referer_id'       => rand(pow(10, 5-1), pow(10, 5)-1),
-                'username'         => $request->username,
-                'email'            => $request->email,
-                'phone'            => $request->phone,
-                'register_package' => $request->register_package,
-                'password'         => Hash::make($request->password),
-                'joining_date'     => date('Y-m-d'),
-                'joining_month'    => date('F'),
-                'joining_year'     => date('Y')
-            ]);
-            
-            // Insert Data user_infos Table
-            $user->userInfo()->updateOrCreate([
-                "country"             => $request->country,
-                "present_address"     => $request->present_address,
-                "permanent_address"   => $request->permanent_address,
-                "post_code"           => $request->post_code,
-                "d_o_b"               => $request->d_o_b,
-                "gender"              => $request->gender,
-                "nid"                 => $request->nid,
-                "nominee"             => $request->nominee,
-                "nominee_relation"    => $request->nominee_relation,
-                "profession"          => $request->profession,
-                "education"           => $request->education,
-                "facebook"            => $request->facebook,
-                "bank_name"           => $request->bank_name,
-                "bank_account_name"   => $request->bank_account_name,
-                "bank_account_number" => $request->bank_account_number,
-                "branch_name"         => $request->branch_name,
-                "bkash"               => $request->bkash,
-                "nagad"               => $request->nagad,
-                "rocket"              => $request->rocket
-            ]);
-            
-            // Insert data income_balances table
-            $user->incomeBalance()->updateOrCreate([
-                'amount'  => 0
-            ]);
-            // Insert data shop_balances table
-            $user->shopBalance()->updateOrCreate([
-                'amount'  => 0
-            ]);
-
-            notify()->success("User successfully added", "Success");
-            return redirect()->route('admin.user.index');
-        } else {
-
-            notify()->warning("Sponsor id not available, please try to correct sponsor id", "Sorry!!");
-            
-            return back();
+        } 
+        else {
+            $sponsor_id   = $request->sponsor_id;
+            $placement_id = $request->placement_id;
         }
         
+        // Insert data to users table
+        $user = User::create([
+            'sponsor_id'       => $sponsor_id,
+            'placement_id'     => $placement_id,
+            'direction'        => $request->direction,
+            'name'             => $request->name,
+            'referer_id'       => rand(pow(10, 5-1), pow(10, 5)-1),
+            'username'         => $request->username,
+            'email'            => $request->email,
+            'phone'            => $request->phone,
+            'register_package' => $request->register_package,
+            'password'         => Hash::make($request->password),
+            'joining_date'     => date('Y-m-d'),
+            'joining_month'    => date('F'),
+            'joining_year'     => date('Y')
+        ]);
+        
+        // Insert Data user_infos Table
+        $user->userInfo()->updateOrCreate([
+            "country"             => $request->country,
+            "present_address"     => $request->present_address,
+            "permanent_address"   => $request->permanent_address,
+            "post_code"           => $request->post_code,
+            "d_o_b"               => $request->d_o_b,
+            "gender"              => $request->gender,
+            "nid"                 => $request->nid,
+            "nominee"             => $request->nominee,
+            "nominee_relation"    => $request->nominee_relation,
+            "profession"          => $request->profession,
+            "education"           => $request->education,
+            "facebook"            => $request->facebook,
+            "bank_name"           => $request->bank_name,
+            "bank_account_name"   => $request->bank_account_name,
+            "bank_account_number" => $request->bank_account_number,
+            "branch_name"         => $request->branch_name,
+            "bkash"               => $request->bkash,
+            "nagad"               => $request->nagad,
+            "rocket"              => $request->rocket
+        ]);
+        
+        // Insert data income_balances table
+        $user->incomeBalance()->updateOrCreate([
+            'amount'  => 0
+        ]);
+        // Insert data shop_balances table
+        $user->shopBalance()->updateOrCreate([
+            'amount'  => 0
+        ]);
+
+        notify()->success("User successfully added", "Success");
+        return redirect()->route('admin.user.index');
     }
 
     /**
@@ -301,7 +345,8 @@ class UserController extends Controller
                     'year'    => date('Y')
                 ]);
 
-            } else {
+            } 
+            else {
                 $amount = setting('generation_one_plus_income');
                 
                 // Insert data to generation_incomes table
@@ -313,6 +358,48 @@ class UserController extends Controller
                     'year'    => date('Y')
                 ]);
             }
+
+            // update user level
+            $left   = $sponsor->countLeft();
+            $middle = $sponsor->countMiddle();
+            $right  = $sponsor->countRight();
+            
+            if ($left < 2 || $middle < 2 || $right < 2) {
+                $sponsor->update([ 'level' => 'No Level' ]);
+            }
+            if ($left >= 2 && $middle >= 2 && $right >= 2) {
+                $sponsor->update([ 'level' => 'Elite' ]);
+            }
+            if ($left > 2 && $left >= 9 && $middle > 2 && $middle >= 9 && $right > 2 && $right >= 9) {
+                $sponsor->update([ 'level' => 'Executive Elite' ]);
+            }
+            if ($left > 9 && $left >= 50 && $middle >9 && $middle >= 50 && $right > 9 && $right >= 50) {
+                $sponsor->update([ 'level' => 'Executive' ]);
+            }
+            if ($left > 50 && $left >= 120 && $middle > 50 && $middle >= 120 && $right > 50 && $right >= 120) {
+                $sponsor->update([ 'level' => 'Senior Executive' ]);
+            }
+            if ($left > 120 && $left >= 360 && $middle > 120 && $middle >= 360 && $right > 120 && $right >= 360) {
+                $sponsor->update([ 'level' => 'Assistant Manager' ]);
+            }
+            if ($left > 360 && $left >= 1080 && $middle > 360 && $middle >= 1080 && $right > 360 && $right >= 1080) {
+                $sponsor->update([ 'level' => 'Manager' ]);
+            }
+            if ($left > 1080 && $left >= 3240 && $middle > 1080 && $middle >= 3240 && $right > 1080 && $right >= 3240) {
+                $sponsor->update([ 'level' => 'General Manager' ]);
+            }
+            if ($left > 3240 && $left >= 9270 && $middle > 3240 && $middle >= 9270 && $right > 3240 && $right >= 9270) {
+                $sponsor->update([ 'level' => 'National Manager' ]);
+            }
+            if ($left > 9270 && $left >= 29160 && $middle > 9270 && $middle >= 29160 && $right > 9270 && $right >= 29160) {
+                $sponsor->update([ 'level' => 'Director' ]);
+            }
+            if ($left > 29160 && $left >= 87480 && $middle > 29160 && $middle >= 87480 && $right > 29160 && $right >= 87480) {
+                $sponsor->update([ 'level' => 'Presidential Director' ]);
+            }
+            if ($left >= 87480 && $middle >= 87480 && $right >= 87480) {
+                $sponsor->update([ 'level' => 'Owners Club Member' ]);
+            }
             
             // Update income_balances table data
             $sponsor->incomeBalance()->update([
@@ -321,7 +408,6 @@ class UserController extends Controller
 
             $sponsor = $sponsor->sponsor;
         }
-            
 
         $activeUser->update([
             'is_approved' => true

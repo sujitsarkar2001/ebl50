@@ -58,7 +58,6 @@
                         <th>Account Number</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,28 +79,27 @@
                             </td>
                             <td>{{date('d-m-y', strtotime($data->date))}}</td>
                             
-                            <td>
+                            {{-- <td>
 
                                 <a href="{{ route('withdraw.edit', $data->id) }}" class="btn btn-info btn-sm" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                     
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th>SL</th>
-                        <th>Total: 
-                            {{$withdraws->sum('amount').'.00'}}
-                        </th>
-                        <th>Method</th>
-                        <th>Holder Name</th>
-                        <th>Account Number</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th>Total:</th>
+                        <th>{{$withdraws->sum('amount')}}</th>
+                        <th>{{$withdraws->sum('charge')}}</th>
+                        <th>{{$withdraws->sum('after_charge')}}</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </tfoot>
             </table>

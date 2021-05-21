@@ -49,48 +49,77 @@ class WithdrawController extends Controller
             'date'           => 'required|date'
         ]);
 
-        $user = auth()->user();
+        $user  = auth()->user();
+
+        // check pending withdraw in auth user
+        $check = Withdraw::where('user_id', $user->id)->where('status', false)->first();
         
-        if ($request->amount > $user->incomeBalance->amount) {
-            
-            notify()->warning("Your account has not enough balance", "Warning");
+        if ($check) {
+            notify()->warning("Already your withdraw amount are pending", "Warning");
             return back();
-
-        } else {
-
-            if ($request->method == 'Bank') {
-                $percent = setting('withdraw_charge_in_bank');
-            } 
-            else if ($request->method == 'Bkash') {
-                $percent = setting('withdraw_charge_in_bkash');
-            }
-            else if ($request->method == 'Nagad') {
-                $percent = setting('withdraw_charge_in_nagad');
-            }
-            else {
-                $percent = setting('withdraw_charge_in_rocket');
-            }
-            
-            $charge = round($percent * ($request->amount / 100), 2);
-            
-            Withdraw::create([
-                'user_id'        => $user->id,
-                'amount'         => $request->amount,
-                'charge'         => $charge,
-                'after_charge'   => $request->amount -$charge,
-                'method'         => $request->method,
-                'holder_name'    => $request->holder_name,
-                'account_number' => $request->account_number,
-                'status'         => false,
-                'date'           => $request->date,
-                'month'          => date('F'),
-                'year'           => date('Y')
-            ]);
-    
-            notify()->success("Your withdraw successfully received", "Success");
-            return redirect()->route('withdraw.index');
         }
         
+        if ($user->incomeBalance->amount >= setting('withdraw_limit')) {
+            
+            if ($request->amount >= setting('withdraw_limit')) {
+                
+                if ($request->amount > $user->incomeBalance->amount) {
+                    notify()->warning("Your account has not enough balance", "Warning");
+                    return back();
+                } 
+                else {
+                    if ($request->method == 'Bank') {
+                        $percent = setting('withdraw_charge_in_bank');
+                    } 
+                    else if ($request->method == 'Bkash') {
+                        $percent = setting('withdraw_charge_in_bkash');
+                    }
+                    else if ($request->method == 'Nagad') {
+                        $percent = setting('withdraw_charge_in_nagad');
+                    }
+                    else {
+                        $percent = setting('withdraw_charge_in_rocket');
+                    }
+                    
+                    $charge = round($percent * ($request->amount / 100), 2);
+                    
+                    $withdraw = Withdraw::create([
+                        'user_id'        => $user->id,
+                        'amount'         => $request->amount,
+                        'charge'         => $charge,
+                        'after_charge'   => $request->amount -$charge,
+                        'method'         => $request->method,
+                        'holder_name'    => $request->holder_name,
+                        'account_number' => $request->account_number,
+                        'status'         => false,
+                        'date'           => $request->date,
+                        'month'          => date('F'),
+                        'year'           => date('Y')
+                    ]);
+
+                    $user->incomeBalance->update([
+                        'amount' => $user->incomeBalance->amount - $request->amount
+                    ]);
+                    // Add Charge Balance to site income balance
+                    \App\Models\SiteIncome::create([
+                        'user_id' => $user->id,
+                        'amount'  => $charge
+                    ]);
+
+            
+                    notify()->success("Your withdraw successfully received", "Success");
+                    return redirect()->route('withdraw.index');
+                }
+            } 
+            else {
+                notify()->warning("Minimum withdraw balance is ".setting('withdraw_limit')." tk", "Warning");
+                return back();
+            }
+        } 
+        else {
+            notify()->warning('You can withdraw money if the minimum is '. setting('withdraw_limit') .'tk', "Warning");
+            return back();
+        } 
     }
 
     /**
@@ -122,52 +151,52 @@ class WithdrawController extends Controller
      * @param  \App\Models\Withdraw  $withdraw
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Withdraw $withdraw)
-    {
-        $this->validate($request, [
-            'amount'         => 'required|numeric',
-            'method'         => 'required|string|max:20',
-            'holder_name'    => 'required|string|max:20',
-            'account_number' => 'required|numeric',
-            'date'           => 'required|date'
-        ]);
+    // public function update(Request $request, Withdraw $withdraw)
+    // {
+    //     $this->validate($request, [
+    //         'amount'         => 'required|numeric',
+    //         'method'         => 'required|string|max:20',
+    //         'holder_name'    => 'required|string|max:20',
+    //         'account_number' => 'required|numeric',
+    //         'date'           => 'required|date'
+    //     ]);
 
-        $user = auth()->user();
+    //     $user = auth()->user();
         
-        if ($request->amount > $user->incomeBalance->amount) {
+    //     if ($request->amount > $user->incomeBalance->amount) {
             
-            notify()->warning("Your account has not enough balance", "Warning");
-            return back();
+    //         notify()->warning("Your account has not enough balance", "Warning");
+    //         return back();
 
-        } else {
-            if ($request->method == 'Bank') {
-                $percent = setting('withdraw_charge_in_bank');
-            } 
-            else if ($request->method == 'Bkash') {
-                $percent = setting('withdraw_charge_in_bkash');
-            }
-            else if ($request->method == 'Nagad') {
-                $percent = setting('withdraw_charge_in_nagad');
-            }
-            else {
-                $percent = setting('withdraw_charge_in_rocket');
-            }
+    //     } else {
+    //         if ($request->method == 'Bank') {
+    //             $percent = setting('withdraw_charge_in_bank');
+    //         } 
+    //         else if ($request->method == 'Bkash') {
+    //             $percent = setting('withdraw_charge_in_bkash');
+    //         }
+    //         else if ($request->method == 'Nagad') {
+    //             $percent = setting('withdraw_charge_in_nagad');
+    //         }
+    //         else {
+    //             $percent = setting('withdraw_charge_in_rocket');
+    //         }
             
-            $charge = round($percent * ($request->amount / 100), 2);
+    //         $charge = round($percent * ($request->amount / 100), 2);
             
-            $withdraw->update([
-                'amount'         => $request->amount,
-                'charge'         => $charge,
-                'after_charge'   => $request->amount -$charge,
-                'method'         => $request->method,
-                'holder_name'    => $request->holder_name,
-                'account_number' => $request->account_number
-            ]);
+    //         $withdraw->update([
+    //             'amount'         => $request->amount,
+    //             'charge'         => $charge,
+    //             'after_charge'   => $request->amount -$charge,
+    //             'method'         => $request->method,
+    //             'holder_name'    => $request->holder_name,
+    //             'account_number' => $request->account_number
+    //         ]);
     
-            notify()->success("Your withdraw successfully received", "Success");
-            return redirect()->route('withdraw.index');
-        }
-    }
+    //         notify()->success("Your withdraw successfully received", "Success");
+    //         return redirect()->route('withdraw.index');
+    //     }
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -198,31 +227,63 @@ class WithdrawController extends Controller
         ]);
 
         $user = auth()->user();
-
-        if ($user->incomeBalance->amount > $request->amount) {
+        
+        if ($user->incomeBalance->amount >= setting('exchange_limit')) {
             
-            $percent = setting('money_exchange_charge');
-            $amount  = $request->amount;
+            if ($request->amount >= setting('exchange_limit')) {
+                
+                if ($user->incomeBalance->amount >= $request->amount) {
             
-            $charge = round($percent * ($amount / 100), 2);
-
-            MoneyExchange::create([
-                'user_id'      => auth()->id(),
-                'amount'       => $amount,
-                'charge'       => $charge,
-                'after_charge' => $amount - $charge,
-                'date'         => date('Y-m-d'),
-                'month'        => date('F'),
-                'year'         => date('Y')
-            ]);
+                    $percent = setting('money_exchange_charge');
+                    $amount  = $request->amount;
+                    
+                    $charge = round($percent * ($amount / 100), 2);
+        
+                    MoneyExchange::create([
+                        'user_id'      => auth()->id(),
+                        'amount'       => $amount,
+                        'charge'       => $charge,
+                        'after_charge' => $amount - $charge,
+                        'status'       => true,
+                        'date'         => date('Y-m-d'),
+                        'month'        => date('F'),
+                        'year'         => date('Y')
+                    ]);
+        
+                    $user->incomeBalance->update([
+                        'amount' => $user->incomeBalance->amount - $amount
+                    ]);
+        
+                    $user->shopBalance->update([
+                        'amount' => $user->shopBalance->amount + ($amount - $charge)
+                    ]);
+        
+                    // Add Charge Balance to site income balance
+                    \App\Models\SiteIncome::create([
+                        'user_id' => $user->id,
+                        'amount'  => $charge
+                    ]);
+                    
+                    notify()->success("Money exchange request successfully received", "Success");
+                    return redirect()->route('money.exchange.list');
+        
+                } else {
+                    notify()->warning("Not enough money to exchange", "Sorry");
+                    return back();
+                } 
+            } 
+            else {
+                notify()->warning("Minimum money exchange balance is ".setting('exchange_limit')." tk", "Warning");
+                return back();
+            }
             
-            notify()->success("Money exchange request successfully received", "Success");
-            return redirect()->route('money.exchange.list');
-
-        } else {
-            notify()->warning("Not enough money to exchange", "Sorry");
+            
+        }
+        else {
+            notify()->warning('You can exchange money if the minimum is '. setting('exchange_limit') .'tk', "Warning");
             return back();
-        } 
+        }
+        
     }
 
     // Show All List in Money Exchange for Authenticated User
@@ -257,6 +318,12 @@ class WithdrawController extends Controller
         
         $authUser = User::find(auth()->id());
 
+        if ($request->username == $authUser->username) {
+            notify()->warning("You does no send shop balance in your self account", "Wrong Policy");
+            return back();
+        }
+        
+
         if ($authUser->shopBalance->amount >= $request->amount) {
 
             $user = User::where('username', $request->username)->first();
@@ -290,10 +357,6 @@ class WithdrawController extends Controller
         else {
             notify()->warning("Not enough balance in your account", "Warning");
             return back();
-        }
-        
-
-        
-        
+        } 
     }
 }

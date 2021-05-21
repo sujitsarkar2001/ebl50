@@ -101,18 +101,7 @@
                                         <td>{{$data->user->referer_id}}</td>
                                         <td>{{$data->amount}}</td>
                                         <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                alert('Are You Sure Delete This Data!!');
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
+                                        
                                     </tr>
                                 @endforeach
                             @else
@@ -124,18 +113,6 @@
                                         <td>{{$data->user->referer_id}}</td>
                                         <td>{{$data->amount}}</td>
                                         <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                alert('Are You Sure Delete This Data!!');
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
                                     </tr>
                                 @endforeach
                             @endif
@@ -196,17 +173,7 @@
                                         <td>{{$data->user->referer_id}}</td>
                                         <td>{{$data->amount}}</td>
                                         <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="{{ route('admin.withdraw.destroy', $data->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
+                                        
                                     </tr>
                                 @endforeach
                             @else
@@ -218,17 +185,7 @@
                                         <td>{{$data->user->referer_id}}</td>
                                         <td>{{$data->amount}}</td>
                                         <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="{{ route('admin.withdraw.destroy', $data->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
+                                        
                                     </tr>
                                 @endforeach 
                             @endif
@@ -378,9 +335,9 @@
                                 @foreach (session('dailies') as $key => $data)
                                     <tr>
                                         <td>{{$key + 1}}</td>
-                                        <td>{{$data->username}}</td>
-                                        <td>{{$data->name}}</td>
-                                        <td>{{$data->name}}</td>
+                                        <td>{{session('user')->username}}</td>
+                                        <td>{{session('user')->name}}</td>
+                                        <td>{{$data->rate}}</td>
                                         <td>{{date('d-m-Y', strtotime($data->date))}}</td>
                                         
                                     </tr>
@@ -388,11 +345,12 @@
                             @else
                                     @php
                                         $dailies_sum = 0;
+                                        $i = 1
                                     @endphp
                                 @foreach($users as $user)
-                                    @foreach ($dailies[$user->id] as $key => $data)
+                                    @foreach ($dailies[$user->id] as $data)
                                         <tr>
-                                            <td>1</td>
+                                            <td>{{$i++}}</td>
                                             <td>{{$user->username}}</td>
                                             <td>{{$user->name}}</td>
                                             <td>{{$data->rate}}</td>
@@ -502,6 +460,78 @@
             </div>
               <!-- /.card -->  
         </div>
+        
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="card-title">Share Income History</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example6" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Refer ID</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (session('share_incomes'))
+                                @foreach (session('share_incomes') as $key => $data)
+                                    <tr>
+                                        <td>{{$key + 1}}</td>
+                                        <td>{{$data->user->username}}</td>
+                                        <td>{{$data->user->name}}</td>
+                                        <td>{{$data->user->referer_id}}</td>
+                                        <td>{{$data->amount}}</td>
+                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
+                                        
+                                    </tr>
+                                @endforeach 
+                            @else
+                                @foreach ($share_incomes as $key => $data)
+                                    <tr>
+                                        <td>{{$key + 1}}</td>
+                                        <td>{{$data->user->username}}</td>
+                                        <td>{{$data->user->name}}</td>
+                                        <td>{{$data->user->referer_id}}</td>
+                                        <td>{{$data->amount}}</td>
+                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
+                                        
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>SL</th>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Refer ID</th>
+                                <th>Total Amount: 
+                                    @if (session('share_incomes'))
+                                        {{session('share_incomes')->sum('amount')}}
+                                    @else
+                                        {{$share_incomes->sum('amount')}}
+                                    @endif
+                                </th>
+                                <th>Date</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+              <!-- /.card -->  
+        </div>
 
     </div>
       
@@ -552,6 +582,11 @@
             "responsive": true, "lengthChange": false, "autoWidth": false,
             "buttons": ["csv", "excel", "pdf", "print",]
             }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
+
+            $("#example6").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["csv", "excel", "pdf", "print",]
+            }).buttons().container().appendTo('#example6_wrapper .col-md-6:eq(0)');
         })
     </script>
 @endpush

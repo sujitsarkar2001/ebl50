@@ -35,7 +35,7 @@ Route::middleware(['auth', 'user'])->group(function () {
     // Video Controller
     Route::get('daily-work', [VideoController::class, 'index'])->name('daily.work');
     Route::get('add/watch/{slug}/{id}', [VideoController::class, 'addIncomeInUserAccount'])->name('add.watch');
-    Route::get('watch/daily-work/{slug}', [VideoController::class, 'showAddIncomeVideo'])->name('watch.daily.work');
+    Route::get('watch/daily-work/{slug}/{id}', [VideoController::class, 'showAddIncomeVideo'])->name('watch.daily.work');
 
     // Auth User Profile Define Here....
     Route::group(['as' => 'profile.', 'prefix' => 'profile'], function () {
@@ -76,16 +76,20 @@ Route::middleware(['auth', 'user'])->group(function () {
         // Route::post('/contact', [ExtraController::class, 'storeContact'])->name('store.contact');
     });
     
-    Route::resource('withdraw', WithdrawController::class);
+    Route::resource('withdraw', WithdrawController::class)->only('index', 'create', 'store');
     
     Route::get('add_referrer', [ExtraController::class, 'showReferrerForm'])->name('show.referrer.form');
     Route::post('add_referrer', [ExtraController::class, 'storeReferrer'])->name('store.referrer');
 
+    // Show notice
+    Route::get('/notice/{slug}', [ExtraController::class, 'showNotice'])->name('notice');
+    
     // View Dynamic Created Page
     
+    Route::get('level', [ExtraController::class, 'showLevel'])->name('level');
+    Route::get('level/{slug}', [ExtraController::class, 'showLevelUser'])->name('level.user');
     Route::get('/{slug}', [ExtraController::class, 'viewPage'])->name('view.page');
 
-    
 });
 
 

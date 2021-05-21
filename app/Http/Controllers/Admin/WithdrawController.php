@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GenerationIncome;
 use App\Models\LevelIncome;
 use App\Models\MoneyExchange;
+use App\Models\ShareIncome;
 use App\Models\SendShopBalance;
 use App\Models\ShopBalance;
 use App\Models\SiteIncome;
@@ -32,27 +33,84 @@ class WithdrawController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
+            'amount'         => 'required|numeric',
+            'method'         => 'required|string|max:20',
             'holder_name'    => 'required|string|max:20',
             'account_number' => 'required|numeric',
             'date'           => 'required|date'
         ]);
 
-        $withdraw = Withdraw::findOrFail($id);
+        $withdraw    = Withdraw::findOrFail($id);
+        $site_income = SiteIncome::where('user_id', $withdraw->user_id)->where('amount', $withdraw->charge)->whereDate('created_at', date('Y-m-d', strtotime($withdraw->created_at)))->first();
+        $user        = User::find($withdraw->user_id);
         
-        if ($request->amount > $withdraw->user->incomeBalance->amount) {
-            
-            notify()->warning("Member account has not enough balance", "Warning");
+        if (!$site_income) {
+            notify()->error("Sorry Something wrong", "Database Problem");
             return back();
+        }
+        if (!$user) {
+            notify()->error("Member not found", "Not Found");
+            return back();
+        }
 
-        } else {
+        $user->incomeBalance->update([
+            'amount' => $user->incomeBalance->amount + $withdraw->amount
+        ]);
+
+        $site_income->update([
+            'amount' => $site_income->amount - $withdraw->charge
+        ]);
+        
+        if ($user->incomeBalance->amount >= $request->amount) {
+            
+            if ($request->method == 'Bank') {
+                $percent = setting('withdraw_charge_in_bank');
+            } 
+            else if ($request->method == 'Bkash') {
+                $percent = setting('withdraw_charge_in_bkash');
+            }
+            else if ($request->method == 'Nagad') {
+                $percent = setting('withdraw_charge_in_nagad');
+            }
+            else {
+                $percent = setting('withdraw_charge_in_rocket');
+            }
+            
+            $charge = round($percent * ($request->amount / 100), 2);
+
             $withdraw->update([
+                'amount'         => $request->amount,
+                'charge'         => $charge,
+                'after_charge'   => $request->amount -$charge,
+                'method'         => $request->method,
                 'holder_name'    => $request->holder_name,
                 'account_number' => $request->account_number,
-                'date'           => $request->date
+                'date'           => $request->date,
             ]);
-    
+            
+            $user->incomeBalance->update([
+                'amount' => $user->incomeBalance->amount - $request->amount
+            ]);
+
+            $site_income->update([
+                'amount' => $site_income->amount + $charge
+            ]);
+
             notify()->success("Withdraw successfully updated", "Success");
             return redirect()->route('admin.withdraw.index');
+
+
+        } else {
+            $user->incomeBalance->update([
+                'amount' => $user->incomeBalance->amount - $withdraw->amount
+            ]);
+
+            $site_income->update([
+                'amount' => $site_income->amount + $withdraw->charge
+            ]);
+
+            notify()->warning("Member account has not enough balance", "Warning");
+            return back();
         }
     }
 
@@ -61,18 +119,8 @@ class WithdrawController extends Controller
     {
         $withdraw = Withdraw::findOrFail($id);
 
-        $withdraw->user->incomeBalance->update([
-            'amount' => $withdraw->user->incomeBalance->amount - $withdraw->amount
-        ]);
-
         $withdraw->update([
             'status' => true
-        ]);
-
-        // Add Charge Balance to site income balance
-        SiteIncome::create([
-            'user_id' => $withdraw->user->id,
-            'amount'  => $withdraw->charge
         ]);
 
         notify()->success("Withdraw amount successfully paid", "Success");
@@ -82,17 +130,19 @@ class WithdrawController extends Controller
     // Show Income History
     public function showIncomeHistory()
     {
-        $sponsors     = SponsorIncome::latest('id')->get();
-        $levels       = LevelIncome::latest('id')->get();
-        $generations  = GenerationIncome::latest('id')->get();
-        $site_incomes = SiteIncome::latest('id')->get();
-        $users = User::all();
+        $sponsors      = SponsorIncome::latest('id')->get();
+        $levels        = LevelIncome::latest('id')->get();
+        $generations   = GenerationIncome::latest('id')->get();
+        $site_incomes  = SiteIncome::latest('id')->get();
+        $share_incomes = ShareIncome::latest('id')->get();
+        $users         = User::get();
         $dailies = [];
         foreach($users as $user) {
-            $dailies[$user->id] = $user->videos;
+            $dailies[$user->id] = $user->videos()->orderBy('id', 'desc')->get();
         }
-        
+        // return $dailies;
         return view('admin.withdraw.income-history', compact(
+            'share_incomes',
             'site_incomes',
             'generations',
             'sponsors',
@@ -114,14 +164,16 @@ class WithdrawController extends Controller
         if ($from_date != '' && $to_date != '') {
 
             $sponsors  = $user->sponsorIncomes
-                    ->where('date', '>=', $from_date)
-                    ->where('date', '<=', $to_date);
+                        ->where('date', '>=', $from_date)
+                        ->where('date', '<=', $to_date);
             $generations  = $user->generationIncomes
                         ->where('date', '>=', $from_date)
                         ->where('date', '<=', $to_date);
             $site_incomes = $user->siteIncomes
-                        ->where('created_at', '>=', $from_date)
-                        ->where('created_at', '<=', $to_date);
+                        ->where('created_at', '>=', $from_date);
+            $share_incomes = $user->shareIncomes
+                        ->where('date', '>=', $from_date)
+                        ->where('date', '<=', $to_date);
             $levels  = $user->levelIncomes
                         ->where('date', '>=', $from_date)
                         ->where('date', '<=', $to_date);
@@ -129,53 +181,28 @@ class WithdrawController extends Controller
                         ->where('date', '>=', $from_date)
                         ->where('date', '<=', $to_date);
         } else {
-            $sponsors     = $user->sponsorIncomes;
-            $generations  = $user->generationIncomes;
-            $site_incomes = $user->siteIncomes;
-            $levels       = $user->levelIncomes;
-            $dailies      = $user->videos;
+            $sponsors      = $user->sponsorIncomes()->orderBy('id', 'desc')->get();
+            $generations   = $user->generationIncomes()->orderBy('id', 'desc')->get();
+            $site_incomes  = $user->siteIncomes()->orderBy('id', 'desc')->get();
+            $share_incomes = $user->shareIncomes()->orderBy('id', 'desc')->get();
+            $levels        = $user->levelIncomes()->orderBy('id', 'desc')->get();
+            $dailies       = $user->videos()->orderBy('id', 'desc')->get();
         }
-        
         
         return redirect(route('admin.withdraw.income.history'))
                 ->with('sponsors', $sponsors)
                 ->with('generations', $generations)
                 ->with('site_incomes', $site_incomes)
+                ->with('share_incomes', $share_incomes)
                 ->with('levels', $levels)
-                ->with('dailies', $dailies);
+                ->with('dailies', $dailies)
+                ->with('user', $user);
     }
 
     public function showMoneyExchangeList()
     {
         $exchanges = MoneyExchange::latest('id')->get();
         return view('admin.withdraw.money-exchange-list', compact('exchanges'));
-    }
-
-    // Approved Money Exchange Request
-    public function approvedMoneyExchange($id)
-    {
-        $exchange = MoneyExchange::findOrFail($id);
-
-        $exchange->user->incomeBalance->update([
-            'amount' => $exchange->user->incomeBalance->amount - $exchange->amount
-        ]);
-
-        $exchange->user->shopBalance->update([
-            'amount' => $exchange->user->shopBalance->amount + $exchange->amount
-        ]);
-
-        // Add Charge Balance to site income balance
-        SiteIncome::create([
-            'user_id' => $exchange->user->id,
-            'amount'  => $exchange->charge
-        ]);
-
-        $exchange->update([
-            'status' => true
-        ]);
-
-        notify()->success("Money exchange request successfully approved", "Success");
-        return back();
     }
 
     // Give Shop Balance to Single User
@@ -198,6 +225,11 @@ class WithdrawController extends Controller
             'username' => 'required|max:30',
             'amount'   => 'required|numeric'
         ]);
+
+        if ($request->username == auth()->user()->username) {
+            notify()->warning("You does no send shop balance in your self account", "Wrong Policy");
+            return back();
+        }
 
         $user = User::where('username', $request->username)->first();
         if ($user) {

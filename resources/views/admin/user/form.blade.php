@@ -94,9 +94,19 @@
                             <div class="card-body">
                                 
                                 <div class="form-group">
-                                    <label for="sponsor_id">Sponsor ID</label>
-                                    <input type="text" name="sponsor_id" id="sponsor_id" class="form-control @error('sponsor_id') is-invalid @enderror" value="{{$user->sponsor->referer_id ?? old('sponsor_id')}}" maxlength="25" min="0" placeholder="Enter Sponsor ID" @isset($user) readonly @endisset>
+                                    <label for="sponsor_id">Sponsor ID (optional)</label>
+                                    <input type="number" name="sponsor_id" id="sponsor_id" class="form-control @error('sponsor_id') is-invalid @enderror" value="{{$user->sponsor->referer_id ?? old('sponsor_id')}}" placeholder="Enter Sponsor ID" @isset($user) readonly @endisset>
                                     @error('sponsor_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="placement_id">Placement ID (optional)</label>
+                                    <input type="number" name="placement_id" id="placement_id" class="form-control @error('placement_id') is-invalid @enderror" value="{{$user->sponsor->placement_id ?? old('placement_id')}}" placeholder="Enter Sponsor ID" @isset($user) readonly @endisset>
+                                    @error('placement_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>

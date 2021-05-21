@@ -46,8 +46,18 @@
 
                 <div class="form-group">
                     <label for="sponsor_id">Sponsor ID</label>
-                    <input type="number" name="sponsor_id" id="sponsor_id" class="form-control @error('sponsor_id') is-invalid @enderror" value="{{old('sponsor_id')}}" maxlength="25" min="0" placeholder="Enter Sponsor ID">
+                    <input type="number" name="sponsor_id" id="sponsor_id" class="form-control @error('sponsor_id') is-invalid @enderror" value="{{old('sponsor_id')}}" placeholder="Enter Sponsor ID">
                     @error('sponsor_id')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="placement_id">Placement ID (optional)</label>
+                    <input type="number" name="placement_id" id="placement_id" class="form-control @error('placement_id') is-invalid @enderror" value="{{old('placement_id')}}" placeholder="Enter Placement ID">
+                    @error('placement_id')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>

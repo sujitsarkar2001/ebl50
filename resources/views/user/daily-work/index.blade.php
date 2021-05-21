@@ -64,7 +64,7 @@
                 
                 @forelse ($notWatchedVideos as $video)
                     <div class="col-sm-4 mb-5">
-                        <a href="{{route('watch.daily.work', $video->slug)}}">
+                        <a href="{{route('watch.daily.work', ['slug' => $video->slug, 'id' => $video->id])}}">
                             <img src="/uploads/video/{{$video->thumbnail}}" class="w-100" alt="" srcset="">
                             <p class="mt-2"><strong>{{$video->title}}</strong></p>
                         </a>

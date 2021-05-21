@@ -16,6 +16,8 @@ class SettingSeeder extends Seeder
     {
         Setting::updateOrCreate(['name' => 'single_package'], ['value' => 1000]);
         Setting::updateOrCreate(['name' => 'share_package'], ['value' => 10000]);
+        Setting::updateOrCreate(['name' => 'withdraw_limit'], ['value' => 100]);
+        Setting::updateOrCreate(['name' => 'exchange_limit'], ['value' => 100]);
         Setting::updateOrCreate(['name' => 'share_package_bonus'], ['value' => 10]);
         Setting::updateOrCreate(['name' => 'money_exchange_charge'], ['value' => 10]);
         Setting::updateOrCreate(['name' => 'withdraw_charge_in_bank'], ['value' => 10]);

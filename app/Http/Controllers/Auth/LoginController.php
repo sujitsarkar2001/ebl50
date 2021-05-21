@@ -67,7 +67,7 @@ class LoginController extends Controller
             return redirect()->intended($this->redirectPath());
         }else{
             return redirect()->route('login')
-                ->with('error','Email-Address And Password Are Wrong.');
+                ->with('error','Username and password not match.');
         }
           
     }

@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         
         $schedule->command('word:day')->daily();
         $schedule->command('word:month')->monthly();
-        $schedule->command('word:share')->monthly();
+        $schedule->command('word:share')->daily();
     }
 
     /**

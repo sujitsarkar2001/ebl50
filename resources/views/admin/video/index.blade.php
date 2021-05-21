@@ -53,8 +53,9 @@
                         <th>SL</th>
                         <th>Title</th>
                         <th>Link</th>
-                        <th>Total Views</th>
+                        <th>Views</th>
                         <th>Status</th>
+                        <th>Rate</th>
                         <th>Added</th>
                         <th>Action</th>
                     </tr>
@@ -63,7 +64,7 @@
                     @foreach ($videos as $key => $data)
                         <tr>
                             <td>{{$key + 1}}</td>
-                            <td>{{$data->title}}</td>
+                            <td>{{Str::words($data->title, 5, '...')}}</td>
                             <td>
                                 <a href="{{$data->link}}" target="_blank" rel="noopener noreferrer">{{$data->link}}</a>
                             </td>
@@ -75,6 +76,7 @@
                                     <span class="badge badge-danger">Disable</span>
                                 @endif  
                             </td>
+                            <td>{{$data->rate}}</td>
                             <td>{{$data->created_at->diffForHumans()}}</td>
                             <td>
                                 @if ($data->status)
@@ -112,8 +114,10 @@
                         <th>SL</th>
                         <th>Title</th>
                         <th>Link</th>
-                        <th>Total Views</th>
+                        <th>Views</th>
                         <th>Status</th>
+                        <th>Rate</th>
+                        <th>Added</th>
                         <th>Action</th>
                     </tr>
                 </tfoot>

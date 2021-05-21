@@ -32,7 +32,7 @@
 <section class="content">
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -52,7 +52,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Auth::user()->sponsorIncomes as $key => $data)
+                            @foreach (Auth::user()->sponsorIncomes()->latest('id')->get() as $key => $data)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$data->amount}}</td>
@@ -75,7 +75,7 @@
               <!-- /.card -->  
         </div>
         
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -95,7 +95,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Auth::user()->generationIncomes as $key => $data)
+                            @foreach (Auth::user()->generationIncomes()->latest('id')->get() as $key => $data)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$data->amount}}</td>
@@ -118,7 +118,7 @@
               <!-- /.card -->  
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -138,7 +138,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Auth::user()->levelIncomes as $key => $data)
+                            @foreach (Auth::user()->levelIncomes()->latest('id')->get() as $key => $data)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$data->amount}}</td>
@@ -161,7 +161,7 @@
               <!-- /.card -->  
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="row">
@@ -181,7 +181,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Auth::user()->videos as $key => $data)
+                            @foreach (Auth::user()->videos()->latest('id')->get() as $key => $data)
                                 <tr>
                                     <td>{{$key + 1}}</td>
                                     <td>{{$data->rate}}</td>
@@ -203,6 +203,51 @@
             </div>
               <!-- /.card -->  
         </div>
+
+        @if(Auth::user()->register_package >= setting('share_package'))
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="card-title">Share Income History</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example5" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>SL</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Auth::user()->shareIncomes()->latest('id')->get() as $key => $data)
+                                <tr>
+                                    <td>{{$key + 1}}</td>
+                                    <td>{{$data->amount}}</td>
+                                    <td>{{date('d-m-Y', strtotime($data->date))}}</td>
+                                </tr>
+                            @endforeach
+                            
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>SL</th>
+                                <th>Total Amount: {{Auth::user()->shareIncomes->sum('amount')}}</th>
+                                <th>Date</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+              <!-- /.card -->  
+        </div>
+        @endif
     </div>
       
       <!-- /.card -->    
@@ -247,6 +292,11 @@
             "responsive": true, "lengthChange": false, "autoWidth": false,
             "buttons": ["csv", "excel", "pdf", "print",]
             }).buttons().container().appendTo('#example4_wrapper .col-md-6:eq(0)');
+
+            $("#example5").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["csv", "excel", "pdf", "print",]
+            }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
         })
     </script>
 @endpush

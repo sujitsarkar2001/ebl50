@@ -42,9 +42,9 @@ class WordOfTheMonth extends Command
 
         foreach ($users as $user) {
             
-            $level = level($user);
+            // $level = level($user);
                 
-            if ($level == 'Senior Executive') {
+            if ($user->level == 'Senior Executive') {
                 $amount = setting('level_four_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -59,7 +59,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             } 
-            else if ($level == 'Assistant Manager') {
+            else if ($user->level == 'Assistant Manager') {
                 $amount = setting('level_five_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -74,7 +74,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'Manager') {
+            else if ($user->level == 'Manager') {
                 $amount = setting('level_six_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -89,7 +89,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'General Manager') {
+            else if ($user->level == 'General Manager') {
                 $amount = setting('level_seven_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -104,7 +104,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'National Manager') {
+            else if ($user->level == 'National Manager') {
                 $amount = setting('level_eight_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -119,7 +119,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'Director') {
+            else if ($user->level == 'Director') {
                 $amount = setting('level_nine_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -134,7 +134,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'Presidential Director') {
+            else if ($user->level == 'Presidential Director') {
                 $amount = setting('level_ten_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([
@@ -149,7 +149,7 @@ class WordOfTheMonth extends Command
                     'amount' => $user->incomeBalance->amount + $amount
                 ]);
             }
-            else if ($level == 'Owners Club Member') {
+            else if ($user->level == 'Owners Club Member') {
                 $amount = setting('level_eleven_bonus');
                 // Insert data to level_incomes table
                 $user->levelIncomes()->create([

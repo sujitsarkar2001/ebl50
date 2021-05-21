@@ -40,14 +40,19 @@
                 <div class="form-row">
                     <div class="form-group col-sm-6">
                         <label for="amount">Amount</label>
-                        <input type="number" name="amount" id="amount" class="form-control @error('amount') is-invalid @enderror" readonly placeholder="Amount" value="{{$withdraw->amount}}">
+                        <input type="number" name="amount" id="amount" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount" value="{{$withdraw->amount}}">
                         @error('amount')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group col-sm-6">
                         <label for="method">Method</label>
-                        <input type="text" name="method" id="method" class="form-control @error('method') is-invalid @enderror" readonly placeholder="Method" value="{{$withdraw->method}}">
+                        <select name="method" id="method" class="form-control @error('method') is-invalid @enderror">
+                            <option value="Bank" @isset($withdraw) {{$withdraw->method == 'Bank' ? 'selected':''}} @endisset>Bank</option>
+                            <option value="Bkash" @isset($withdraw) {{$withdraw->method == 'Bkash' ? 'selected':''}} @endisset>Bkash</option>
+                            <option value="Nagad" @isset($withdraw) {{$withdraw->method == 'Nagad' ? 'selected':''}} @endisset>Nagad</option>
+                            <option value="Rocket" @isset($withdraw) {{$withdraw->method == 'Rocket' ? 'selected':''}} @endisset>Rocket</option>
+                        </select>
                         @error('method')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -76,6 +81,16 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="form-group col-sm-6">
+                        <label for="charge">Charge (<span id="show_charge"></span>%)</label>
+                        <input type="number" id="charge" class="form-control" placeholder="Charge" value="{{$withdraw->charge ?? ''}}" readonly>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <label for="after_charge">After Charge</label>
+                        <input type="number" id="after_charge" class="form-control" placeholder="After Charge" value="{{$withdraw->after_charge ?? ''}}" readonly>
+                    </div>
                 </div>
             </div>
 
@@ -98,5 +113,38 @@
 @endsection
 
 @push('js')
-    
+    <script>
+        $(document).ready(function () {
+            
+            $('#amount').on('input', function() {
+                calculate();
+            });
+
+            function calculate() {
+                let method  = $('#method').val();
+                let amount  = $('#amount').val();
+                let percent = 0;
+                
+                if (method == 'Bank') {
+                    percent = "{{setting('withdraw_charge_in_bank')}}";
+                } 
+                else if (method == 'Bkash') {
+                    percent = "{{setting('withdraw_charge_in_bkash')}}";
+                }
+                else if (method == 'Nagad') {
+                    percent = "{{setting('withdraw_charge_in_nagad')}}";
+                }
+                else {
+                    percent = "{{setting('withdraw_charge_in_rocket')}}";
+                }
+
+                let total =  ((percent/ 100) * amount).toFixed(2);
+                
+                $('#charge').val(total);
+                $('#after_charge').val(amount - total);
+                $('#show_charge').text(percent);
+            }
+            $('#method').on('change', function() { calculate() });
+        });
+    </script>
 @endpush

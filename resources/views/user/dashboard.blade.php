@@ -14,11 +14,11 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Blank Page</h1>
+                <h1>Dashboard</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
                 </ol>
             </div>
         </div>
@@ -55,7 +55,7 @@
                             <span class="info-box-number">
                                 {{-- This function define to App\Helpers\Level.php --}}
                                 {{Auth::user()->sponsor->name ?? ''}}
-                                <span>({{Auth::user()->sponsor->referer_id ?? '0'}})</span>
+                                <span>({{Auth::user()->sponsor->referer_id ?? 'No available'}})</span>
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -70,7 +70,7 @@
                             <span class="info-box-text">Your Level</span>
                             <span class="info-box-number">
                                 {{-- This function define to App\Helpers\Level.php --}}
-                                {{level(Auth::user())}}
+                                {{Auth::user()->level}}
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -88,8 +88,10 @@
                                     Left
                                 @elseif (Auth::user()->direction == 2)
                                     Middle
-                                @else
+                                @elseif (Auth::user()->direction == 3)
                                     Right
+                                @else 
+                                    No available
                                 @endif
                             </span>
                         </div>
@@ -370,6 +372,41 @@
             </div>
         </div>
         
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Latest Posts</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @forelse ($noticed as $notice)
+                            <div class="col-sm-4 col-md-3">
+                                <div class="card">
+                                    <a href="{{route('notice', $notice->slug)}}">
+                                        <img class="card-img-top w-100" src="/uploads/notice/{{$notice->image}}" alt="Card image cap">
+                                        <div class="card-body px-1 py-2">
+                                            <h4 class="card-title" style="text-decoration: underline">{{Str::words($notice->title, 10, '...')}}</h4>
+                                            <span>{{$notice->created_at->toFormattedDateString()}}</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div> 
+                        @empty
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title text-center">Notice does not available</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </section>

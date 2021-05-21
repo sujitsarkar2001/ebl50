@@ -53,52 +53,52 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'sponsor_id' => ['required', 'string', 'max:50'],
-            'name' => ['required', 'string', 'max:50'],
-            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'country_code' => ['required', 'string', 'max:5'],
-            'phone' => ['required', 'digits:10'],
-            'side' => ['required', 'string', 'max:20'],
-            'register_package' => ['required', 'numeric'],
-            'password' => ['required', 'string', 'min:8', 'confirmed']
-        ]);
-    }
+    // protected function validator(array $data)
+    // {
+    //     return Validator::make($data, [
+    //         'sponsor_id' => ['required', 'string', 'max:50'],
+    //         'name' => ['required', 'string', 'max:50'],
+    //         'username' => ['required', 'string', 'max:50', 'unique:users,username'],
+    //         'email' => ['required', 'string', 'email', 'max:255'],
+    //         'country_code' => ['required', 'string', 'max:5'],
+    //         'phone' => ['required', 'digits:10'],
+    //         'side' => ['required', 'string', 'max:20'],
+    //         'register_package' => ['required', 'numeric'],
+    //         'password' => ['required', 'string', 'min:8', 'confirmed']
+    //     ]);
+    // }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function create(array $data)
-    {
-        $check = User::where('sponsor_id', $data['sponsor_id'])->first();
+    // /**
+    //  * Create a new user instance after a valid registration.
+    //  *
+    //  * @param  array  $data
+    //  * @return \App\Models\User
+    //  */
+    // protected function create(array $data)
+    // {
+    //     $check = User::where('sponsor_id', $data['sponsor_id'])->first();
         
-        if ($check) {
-            return User::create([
-                'parent_id'        => $check->id,
-                'sponsor_id'       => $data['sponsor_id'],
-                'name'             => $data['name'],
-                'username'         => $data['username'],
-                'email'            => $data['email'],
-                'country_code'     => $data['country_code'],
-                'phone'            => $data['phone'],
-                'side'             => $data['side'],
-                'register_package' => $data['register_package'],
-                'password'         => Hash::make($data['password']),
-            ]);
-        }
-    }
-
+    //     if ($check) {
+    //         return User::create([
+    //             'parent_id'        => $check->id,
+    //             'sponsor_id'       => $data['sponsor_id'],
+    //             'name'             => $data['name'],
+    //             'username'         => $data['username'],
+    //             'email'            => $data['email'],
+    //             'country_code'     => $data['country_code'],
+    //             'phone'            => $data['phone'],
+    //             'side'             => $data['side'],
+    //             'register_package' => $data['register_package'],
+    //             'password'         => Hash::make($data['password']),
+    //         ]);
+    //     }
+    // }
 
     public function register(Request $request)
     {
         $this->validate($request, [
             'sponsor_id'       => 'required|numeric',
+            'placement_id'     => 'nullable|numeric',
             'name'             => 'required|string|max:50',
             'username'         => 'required|string|max:50|unique:users,username',
             'email'            => 'required|string|email|max:255',
@@ -108,23 +108,56 @@ class RegisterController extends Controller
             'register_package' => 'required|numeric',
             'password'         => 'required|string|min:8|confirmed'
         ]);
-
+        
         $sponsor = User::where('referer_id', $request->sponsor_id)->first();
         
         if ($sponsor) {
+            
+            if ($request->placement_id != null) {
+                $placement = User::where('referer_id', $request->placement_id)->first();
 
-            $child = $sponsor;
-            $placement_id = $sponsor->id;
-            while(true){
-                $child = $child->children()->where(['direction' => $request->direction])->first();
-                if ($child) {
-                    $placement_id = $child->id;
-                }  else { 
-                    break;
+                if ($placement) {
+                    $activeUser = $placement;
+
+                    for ($i = 0; $i < 11 && $activeUser; $i++)
+                    {
+                        if ($sponsor->id == $activeUser->sponsor_id) {
+                            $child = $placement;
+                            $placement_id = $placement->id;
+                            while(true){
+                                $child = $child->children()->where(['direction' => $request->direction])->first();
+                                
+                                if ($child) {
+                                    $placement_id = $child->id;
+                                } else { 
+                                    break;
+                                }
+                            }
+                        } else {
+                            $activeUser = $activeUser->sponsor; 
+                        }
+                    }
+                    if (!isset($placement_id)) {
+                        return back()->with('wrong', 'Placement id does not match');
+                    }
                 }
-                
+                else {
+                    return back()->with('wrong', 'Placement id not found');
+                }
+            } 
+            else {
+                $child = $sponsor;
+                $placement_id = $sponsor->id;
+                while(true){
+                    $child = $child->children()->where(['direction' => $request->direction])->first();
+                    if ($child) {
+                        $placement_id = $child->id;
+                    }  else { 
+                        break;
+                    }
+                }
             }
-
+            // return 'STOP';
             $user = User::create([
                 'placement_id'     => $placement_id,
                 'sponsor_id'       => $sponsor->id,
@@ -158,11 +191,45 @@ class RegisterController extends Controller
             ]);
 
             return back()->with('success', 'Your registration successfully done, please wait to check admin your account.');
-        } else {
-            
+        } 
+        else {
             return back()->with('wrong', 'Sponsor id not available, please try to correct reference number');
-            
         }
-        return back();
     }
+
+    // if ($sponsor->id == $placement->sponsor_id) {
+    //     $child = $placement;
+    //     $placement_id = $placement->id;
+    //     while(true){
+    //         $child = $child->children()->where(['direction' => $request->direction])->first();
+            
+    //         if ($child) {
+    //             $placement_id = $child->id;
+    //         } else { 
+    //             break;
+    //         }
+    //     }
+    // } 
+    // else {
+    //     $activeUser = $placement->sponsor;
+
+    //     for ($i = 0; $i < 11 && $activeUser; $i++)
+    //     {
+    //         if ($sponsor->id == $activeUser->sponsor_id) {
+    //             $child = $placement;
+    //             $placement_id = $placement->id;
+    //             while(true){
+    //                 $child = $child->children()->where(['direction' => $request->direction])->first();
+                    
+    //                 if ($child) {
+    //                     $placement_id = $child->id;
+    //                 } else { 
+    //                     break;
+    //                 }
+    //             }
+    //         } else {
+    //             $activeUser = $activeUser->sponsor; 
+    //         }
+    //     }
+    // }
 }

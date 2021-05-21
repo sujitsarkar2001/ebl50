@@ -17,9 +17,6 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::updateOrCreate([
-            'sponsor_id' => 0,
-            'placement_id' => 0,
-            'direction' => 0,
             'name' => 'Admin',
             'username' => 'admin',
             'email' => 'admin@gmail.com',
@@ -35,9 +32,6 @@ class UserSeeder extends Seeder
         ]);
 
         $user = User::updateOrCreate([
-            'sponsor_id' => 0,
-            'placement_id' => 0,
-            'direction' => 0,
             'name' => 'User',
             'referer_id' => 11111,
             'username' => 'user',

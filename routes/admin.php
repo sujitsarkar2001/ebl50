@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\WithdrawController;
 use App\Http\Controllers\Admin\ExtraController;
 use App\Http\Controllers\Admin\MyTeamController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\StaffController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,7 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('income/search', [WithdrawController::class, 'searchIncomeHistory'])->name('income.search');
         
         Route::get('money/exchange', [WithdrawController::class, 'showMoneyExchangeList'])->name('money.exchange');
-        Route::get('money/exchange/{id}', [WithdrawController::class, 'approvedMoneyExchange'])->name('money.exchange.approved');
+        // Route::get('money/exchange/{id}', [WithdrawController::class, 'approvedMoneyExchange'])->name('money.exchange.approved');
         Route::delete('money/exchange/{id}', [WithdrawController::class, 'destroyMoneyExchange'])->name('money.exchange.destroy');
         
         Route::get('shop/balance', [WithdrawController::class, 'shopBalance'])->name('shop.balance');
@@ -93,11 +94,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
         // Route::post('/contact', [ExtraController::class, 'storeContact'])->name('store.contact');
     });
 
+    Route::get('notice/status/{id}', [NoticeController::class, 'status'])->name('notice.status');
+
     Route::resource('staff', StaffController::class)->except('show');
     Route::resource('user', UserController::class);
     Route::resource('page', PageController::class);
     Route::resource('video', VideoController::class);
+    Route::resource('notice', NoticeController::class);
+    
 
     // View Dynamic Created Page
+    Route::get('level', [ExtraController::class, 'showLevel'])->name('level');
+    Route::get('level/{slug}', [ExtraController::class, 'showLevelUser'])->name('level.user');
     Route::get('/{slug}', [ExtraController::class, 'viewPage'])->name('view.page');
 });

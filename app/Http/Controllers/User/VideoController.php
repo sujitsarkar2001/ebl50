@@ -33,9 +33,9 @@ class VideoController extends Controller
         return view('user.daily-work.index', compact('notWatchedVideos'));
     }
 
-    public function showAddIncomeVideo($slug)
+    public function showAddIncomeVideo($slug, $id)
     {
-        $video = Video::where('slug', $slug)->firstOrFail();
+        $video = Video::where('id', $id)->where('slug', $slug)->firstOrFail();
         
         return view('user.daily-work.add-income', compact('video'));
     }

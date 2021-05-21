@@ -24,6 +24,7 @@
 
 <!-- Main content -->
 <section class="content">
+    <div class="alert alert-danger">You can withdraw money if the minimum is {{setting('withdraw_limit')}}tk</div>
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Withdraw Money</h3>
@@ -43,7 +44,7 @@
                     
                     <div class="form-group col-sm-6">
                         <label for="method">Select Method</label>
-                        <select name="method" id="method" class="form-control @error('method') is-invalid @enderror">
+                        <selectc name="method" id="method" class="form-control @error('method') is-invalid @enderror">
                             <option value="Bank" @isset($withdraw) {{$withdraw->method == 'Bank' ? 'selected':''}} @endisset>Bank</option>
                             <option value="Bkash" @isset($withdraw) {{$withdraw->method == 'Bkash' ? 'selected':''}} @endisset>Bkash</option>
                             <option value="Nagad" @isset($withdraw) {{$withdraw->method == 'Nagad' ? 'selected':''}} @endisset>Nagad</option>
@@ -55,7 +56,7 @@
                     </div>
                     <div class="form-group col-sm-6">
                         <label for="holder_name">Holder Name</label>
-                        <input type="text" name="holder_name" id="holder_name" class="form-control @error('holder_name') is-invalid @enderror" placeholder="Holder name" value="{{$withdraw->holder_name ?? old('holder_name')}}">
+                        <input required type="text" name="holder_name" id="holder_name" class="form-control @error('holder_name') is-invalid @enderror" placeholder="Holder name" value="{{$withdraw->holder_name ?? old('holder_name')}}">
                         @error('holder_name')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -66,14 +67,14 @@
                     
                     <div class="form-group col-sm-6">
                         <label for="account_number">Account Number</label>
-                        <input type="text" name="account_number" id="account_number" class="form-control @error('account_number') is-invalid @enderror" placeholder="Account number" value="{{$withdraw->account_number ?? old('account_number')}}">
+                        <input required type="text" name="account_number" id="account_number" class="form-control @error('account_number') is-invalid @enderror" placeholder="Account number" value="{{$withdraw->account_number ?? old('account_number')}}">
                         @error('account_number')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group col-sm-6">
                         <label for="date">Date</label>
-                        <input type="date" name="date" id="date" class="form-control @error('date') is-invalid @enderror" value="{{$withdraw->date??old('date')}}">
+                        <input required type="date" name="date" id="date" class="form-control @error('date') is-invalid @enderror" value="{{$withdraw->date??old('date')}}">
                         @error('date')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -84,13 +85,13 @@
                     
                     <div class="form-group col-sm-6">
                         <label for="amount">Amount</label>
-                        <input type="number" name="amount" id="amount" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount" value="{{$withdraw->amount ?? old('amount')}}">
+                        <input type="number" name="amount" id="amount" class="form-control @error('amount') is-invalid @enderror" placeholder="Amount" value="{{$withdraw->amount ?? ''}}">
                         @error('amount')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="charge">Charge</label>
+                        <label for="charge">Charge (<span id="show_charge">{{setting('withdraw_charge_in_bank')}}</span>%)</label>
                         <input type="number" id="charge" class="form-control" placeholder="Charge" value="{{$withdraw->charge ?? ''}}" readonly>
                     </div>
                     <div class="form-group col-sm-6">
@@ -155,6 +156,7 @@
             
             $('#charge').val(total);
             $('#after_charge').val(amount - total);
+            $('#show_charge').text(percent);
         }
 
         $('#method').on('change', function() { calculate() });

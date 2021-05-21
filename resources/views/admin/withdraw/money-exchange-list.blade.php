@@ -47,7 +47,6 @@
                         <th>After Charge</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,7 +66,7 @@
                                 @endif  
                             </td>
                             <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                            <td>
+                            {{-- <td>
 
                                 @if ($data->status)
                                 <a href="#" class="btn btn-warning btn-sm disabled">
@@ -79,7 +78,7 @@
                                 </a>
                                 @endif
 
-                                {{-- <a href="#" class="btn btn-danger btn-sm"
+                                <a href="#" class="btn btn-danger btn-sm"
                                     onclick="event.preventDefault();
                                     document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
                                     <i class="nav-icon fas fa-trash-alt"></i>
@@ -87,8 +86,8 @@
                                 <form id="delete-form-{{$data->id}}" action="{{ route('admin.withdraw.money.exchange.destroy', $data->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                </form> --}}
-                            </td>
+                                </form>
+                            </td> --}}
                         </tr>
                     @endforeach
                     
@@ -103,8 +102,6 @@
                         <th>Total: {{$exchanges->sum('after_charge')}} </th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Action</th>
-                    </tr>
                 </thead>
             </table>
         </div>

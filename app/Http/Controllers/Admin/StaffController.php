@@ -79,7 +79,7 @@ class StaffController extends Controller
      */
     public function show($id)
     {
-        $staff = User::findOrFail($id);
+        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail();
         return view('admin.staff.show', compact('staff'));
     }
 
@@ -91,7 +91,7 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
-        $staff = User::findOrFail($id);
+        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail();
         return view('admin.staff.form', compact('staff'));
     }
 
@@ -104,7 +104,7 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $staff = User::findOrFail($id);
+        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail();
         $this->validate($request, [
             "name"      => "required|string|max:50",
             "username"  => "required|string|max:50|unique:users,username,".$id,
@@ -131,7 +131,7 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
-        $staff = User::findOrFail($id);
+        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail();
         if (file_exists('uploads/member/'.$staff->avatar)) {
             unlink('uploads/member/'.$staff->avatar);
         }

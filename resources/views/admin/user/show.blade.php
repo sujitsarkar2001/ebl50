@@ -112,7 +112,7 @@
                             <span class="contact-title">Rank:</span>
                             <span>
                                 {{-- This Function Define App\Helpers\LevelHelper.php --}}
-                                {{level(Auth::user())}}
+                                {{$user->level}}
                             </span>
                         </div>
                         <div class="birthday-content">

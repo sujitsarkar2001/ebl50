@@ -64,6 +64,19 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{setting('exchange_limit')}} tk</h3>
+    
+                    <p>Minimum amount to exchange</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+            </div>
+        </div>
         
     </div>
     <div class="row">
