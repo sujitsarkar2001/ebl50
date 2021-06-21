@@ -35,77 +35,33 @@
                       <p>Level</p>
                     </a>
                 </li>
-
-                <li class="nav-item {{Request::is('admin/notice*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-history"></i>
-                        <p>
-                            Notice
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                
+                <li class="nav-item {{Request::is('admin/service*') ? 'menu-is-opening menu-open':''}}">
+                    <a href="{{route('admin.service.index')}}" class="nav-link">
+                      <i class="nav-icon fas fa-server"></i>
+                      <p>Service</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.notice.create')}}" class="nav-link {{Request::is('admin/notice/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.notice.index')}}" class="nav-link {{Request::is('admin/notice') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
-                            </a>
-                        </li>
-                    </ul>
+                </li>
+                
+                <li class="nav-item {{Request::is('admin/notice*') ? 'menu-is-opening menu-open':''}}">
+                    <a href="{{route('admin.notice.index')}}" class="nav-link">
+                      <i class="nav-icon fas fa-exclamation-triangle"></i>
+                      <p>Notice</p>
+                    </a>
                 </li>
 
                 <li class="nav-item {{Request::is('admin/staff*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>
-                            Staff
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <a href="{{route('admin.staff.index')}}" class="nav-link">
+                      <i class="nav-icon fas fa-users"></i>
+                      <p>Staff</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.staff.create')}}" class="nav-link {{Request::is('admin/staff/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.staff.index')}}" class="nav-link {{Request::is('admin/staff') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
                 <li class="nav-item {{Request::is('admin/page*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-list-ul"></i>
-                        <p>
-                            Pages
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <a href="{{route('admin.page.index')}}" class="nav-link">
+                      <i class="nav-icon fas fa-list-ul"></i>
+                      <p>Page</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.page.create')}}" class="nav-link {{Request::is('admin/page/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.page.index')}}" class="nav-link {{Request::is('admin/page') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
                 <li class="nav-item {{Request::is('admin/user*') ? 'menu-is-opening menu-open':''}}">
@@ -118,54 +74,38 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{route('admin.user.create')}}" class="nav-link {{Request::is('admin/user/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
+                            <a href="{{route('admin.user.index')}}" class="nav-link {{Request::is('admin/user') ? 'active':''}}">
+                                <i class="fas fa-bars nav-icon"></i>
+                                <p>All Member</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('admin.user.index')}}" class="nav-link {{Request::is('admin/user') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
+                            <a href="{{route('admin.user.approve')}}" class="nav-link {{Request::is('admin/user/approved') ? 'active':''}}">
+                                <i class="fas fa-thumbs-up nav-icon"></i>
+                                <p>Approved Member</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{route('admin.user.new')}}" class="nav-link {{Request::is('admin/user/new') ? 'active':''}}">
                                 <i class="fas fa-user-plus nav-icon"></i>
-                                <p>New</p>
+                                <p>New Member</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{route('admin.user.blocked')}}" class="nav-link {{Request::is('admin/user/blocked') ? 'active':''}}">
                                 <i class="fas fa-user-slash nav-icon"></i>
-                                <p>Blocked</p>
+                                <p>Blocked Member</p>
                             </a>
                         </li>
+                        
                     </ul>
                 </li>
 
                 <li class="nav-item {{Request::is('admin/video*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fab fa-youtube"></i>
-                        <p>
-                            Videos
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <a href="{{route('admin.video.index')}}" class="nav-link">
+                      <i class="nav-icon fab fa-youtube"></i>
+                      <p>Videos</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.video.create')}}" class="nav-link {{Request::is('admin/video/create') ? 'active':''}}">
-                                <i class="fas fa-plus-circle nav-icon"></i>
-                                <p>Add</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.video.index')}}" class="nav-link {{Request::is('admin/video') ? 'active':''}}">
-                                <i class="fas fa-bars nav-icon"></i>
-                                <p>List</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
 
@@ -187,7 +127,7 @@
                         <li class="nav-item">
                             <a href="{{route('admin.withdraw.income.history')}}" class="nav-link {{Request::is('admin/withdraw/income/history') ? 'active':''}}">
                                 <i class="fas fa-history nav-icon"></i>
-                                <p>Income History</p>
+                                <p>Member Income History</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -197,15 +137,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('admin.withdraw.shop.balance.create')}}" class="nav-link {{Request::is('admin/withdraw/shop/balance/create') ? 'active':''}}">
-                                <i class="fas fa-money-check-alt nav-icon"></i>
-                                <p>Give Shop Balance</p>
+                            <a href="{{route('admin.withdraw.income.balance')}}" class="nav-link {{Request::is('admin/withdraw/income/balance') ? 'active':''}}">
+                                <i class="fas fa-radiation-alt nav-icon"></i>
+                                <p>Send Income Balance</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{route('admin.withdraw.shop.balance')}}" class="nav-link {{Request::is('admin/withdraw/shop/balance') ? 'active':''}}">
-                                <i class="fas fa-history nav-icon"></i>
-                                <p>Give Shop Balance History</p>
+                                <i class="fas fa-store-slash nav-icon"></i>
+                                <p>Send Shop Balance</p>
                             </a>
                         </li>
                     </ul>
@@ -268,29 +208,13 @@
                     </ul>
                 </li>
 
-                <li class="nav-item {{Request::is('admin/profile*') ? 'menu-is-opening menu-open':''}}">
-                    <a href="#" class="nav-link">
+                <li class="nav-item {{Request::is('admin/profile') ? 'menu-is-opening menu-open':''}}">
+                    <a href="{{route('admin.profile.index')}}" class="nav-link">
                         <i class="nav-icon fas fa-user-circle"></i>
                         <p>
                             Profile
-                            <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route('admin.profile.index')}}" class="nav-link {{Request::is('admin/profile/show') ? 'active':''}}">
-                                <i class="fas fa-user nav-icon"></i>
-                                <p>My Profile</p>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a href="{{route('admin.profile.change.password')}}" class="nav-link {{Request::is('admin/profile/change-password') ? 'active':''}}">
-                                <i class="fas fa-key nav-icon"></i>
-                                <p>Change Password</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
                 <li class="nav-item">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class PageController extends Controller
@@ -12,70 +13,57 @@ class PageController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
-        $pages = Page::latest('id')->get();
-        return view('admin.page.index', compact('pages'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('admin.page.form');
+        return view('admin.page.index');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
         // Check validation
         $this->validate($request, [
-            'name'  => 'required|string|unique:pages',
+            'name'  => 'required|string|unique:pages,name',
             'body'  => 'required|string'
         ]);
-        
+
         // Store date
-        $page = Page::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'body' => $request->body,
-            'meta_description' => $request->meta_description,
-            'meta_keywords' => $request->meta_keywords,
-            'status' => $request->filled('status'),
+        Page::create([
+            'name'   => $request->name,
+            'slug'   => Str::slug($request->name),
+            'body'   => $request->body
         ]);
 
-        notify()->success("Page successfully created", "Success");
-        
-        return redirect()->route('admin.page.index');
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Page successfully added'
+        ]);
 
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Page  $page
-     * @return \Illuminate\Http\Response
+     * @param Page $page
+     * @return Response
      */
     public function show(Page $page)
     {
-        return view('admin.page.show', compact('page'));
+        return response()->json($page);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Page  $page
-     * @return \Illuminate\Http\Response
+     * @param Page $page
+     * @return Response
      */
     public function edit(Page $page)
     {
@@ -85,9 +73,9 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Page  $page
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Page $page
+     * @return Response
      */
     public function update(Request $request, Page $page)
     {
@@ -96,7 +84,7 @@ class PageController extends Controller
             'name'  => 'required|string|unique:pages,name,'.$page->id,
             'body'  => 'required|string'
         ]);
-        
+
         // Store date
         $page->update([
             'name' => $request->name,
@@ -107,21 +95,36 @@ class PageController extends Controller
             'status' => $request->filled('status'),
         ]);
 
-        notify()->success('Page successfully updated', 'Success');
-        
-        return redirect()->route('admin.page.index');
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Page successfully updated'
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Page  $page
-     * @return \Illuminate\Http\Response
+     * @param Page $page
+     * @return Response
      */
     public function destroy(Page $page)
     {
         $page->delete();
-        notify()->success('Page successfully deleted', 'Success');
-        return back();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Page successfully deleted'
+        ]);
+    }
+
+    public function status($id){
+        $page   = Page::findOrFail($id);
+        $status = $page->status ? false:true;
+        $page->status = $status;
+        $page->save();
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Page status successfully updated'
+        ]);
     }
 }

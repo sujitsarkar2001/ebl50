@@ -15,7 +15,7 @@ class CreateShopBalancesTable extends Migration
     {
         Schema::create('shop_balances', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('amount', 20, 2)->default(0.00);
             $table->timestamps();
         });

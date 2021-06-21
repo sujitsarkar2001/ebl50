@@ -7,6 +7,8 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\User;
+
 
 class LoginController extends Controller
 {
@@ -38,8 +40,9 @@ class LoginController extends Controller
     public function __construct()
     {
         if (Auth::check() && Auth::user()->is_admin == true) {
-            
+
             $this->redirectTo = route('admin.dashboard');
+
         } else if (Auth::check() && Auth::user()->is_admin == false) {
             $this->redirectTo = route('dashboard');
         }
@@ -52,23 +55,49 @@ class LoginController extends Controller
      * @return void
      */
     public function login(Request $request)
-    {   
-        $input = $request->all();
-  
+    {
         $this->validate($request, [
             'username' => 'required',
             'password' => 'required',
         ]);
-  
+
+        $credentials = array(
+            'username' => $request->username,
+            'password' => $request->password
+        );
+        $remember_me  = ( !empty( $request->remember ) )? TRUE : FALSE;
         // $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         
-        if(auth()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
+        if(auth()->attempt($credentials))
         {
-            return redirect()->intended($this->redirectPath());
+            $user = User::where(["username" => $credentials['username']])->first();
+
+            Auth::login($user, $remember_me);
+
+            // return redirect()->intended($this->redirectPath());
+            // return $this->redirectPath();
+
+            if ($user->is_admin) {
+                $redirect = '/admin';
+            } else {
+                $redirect = '/';
+            }
+            
+            
+            return response()->json([
+                'alert'    => 'Success',
+                'redirect' => $redirect,
+                'message'  => 'You are successfully logged in, please wait',
+            ]);
+
         }else{
-            return redirect()->route('login')
-                ->with('error','Username and password not match.');
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'Username and password not match'
+            ]);
+            // notify()->error("Username and password not match", "Not Match");
+            // return back();
         }
-          
+
     }
 }

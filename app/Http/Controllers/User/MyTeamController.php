@@ -7,28 +7,34 @@ use App\Models\User;
 
 class MyTeamController extends Controller
 {
+    public function index()
+    {
+        return view('user.team.index');
+    }
+
     // Tree view data show
     public function treeView()
     {
-        return view('user.team.tree');
+        $member = auth()->user();
+        return view('user.team.tree', compact('member'));
     }
 
     // Tree view data show by ID
-    public function treeViewById($id)
+    public function treeViewById($username)
     {
-        $user = User::findOrFail($id);
-        return view('user.team.tree-by-id', compact('user'));
+        $member = User::where('username', $username)->firstOrFail();
+        return view('user.team.tree', compact('member'));
     }
 
-    // List view sponsor data show 
+    // List view sponsor data show
     public function listView()
     {
         return view('user.team.list-view');
     }
 
-    public function profile($id)
+    public function profile($username)
     {
-        $user = User::findOrFail($id);
-        return view('user.team.profile', compact('user'));
+        $member = User::where('username', $username)->firstOrFail();
+        return view('user.team.profile', compact('member'));
     }
 }

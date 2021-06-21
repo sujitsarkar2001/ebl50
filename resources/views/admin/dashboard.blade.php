@@ -3,8 +3,7 @@
 @section('title', 'Dashboard')
 
 @push('css')
-    <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 @endpush
 
 @section('content')
@@ -260,7 +259,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{$today_video_income}}</h3>
+                    <h3>{{$today_daily_income}}</h3>
     
                     <p>Today Daily Income</p>
                 </div>
@@ -274,7 +273,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{$week_video_income}}</h3>
+                    <h3>{{$week_daily_income}}</h3>
     
                     <p>This Week Daily Income</p>
                 </div>
@@ -288,7 +287,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{$month_video_income}}</h3>
+                    <h3>{{$month_daily_income}}</h3>
     
                     <p>This Month Daily Income</p>
                 </div>
@@ -302,7 +301,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{$total_video_income}}</h3>
+                    <h3>{{$total_daily_income}}</h3>
     
                     <p>Total Daily Income</p>
                 </div>
@@ -398,149 +397,8 @@
                 <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
-
-        {{-- <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{$today_single_package_income}}</h3>
-    
-                    <p>Today Single Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check-alt"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{$week_single_package_income}}</h3>
-    
-                    <p>Week Single Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>{{$year_single_package_income}}</h3>
-    
-                    <p>Year Single Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{$total_single_package_income}}</h3>
-    
-                    <p>Total Single Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{$today_share_package_income}}</h3>
-    
-                    <p>Today Share Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>{{$week_share_package_income}}</h3>
-    
-                    <p>Week Share Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check-alt"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{$year_share_package_income}}</h3>
-    
-                    <p>Year Share Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{$total_share_package_income}}</h3>
-    
-                    <p>Total Share Income</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-money-check"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div> --}}
-        
-
     </div>
-    <!-- Default box -->
-    {{-- <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Title</h3>
-
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                    <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            
-        </div>
-        <!-- /.card-body -->
-    </div> --}}
-    <!-- /.card -->
 
 </section>
-<!-- /.content -->
 
 @endsection
-
-@push('js')
-    
-@endpush

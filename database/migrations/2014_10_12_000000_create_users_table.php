@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('placement_id')->nullable();
             $table->unsignedTinyInteger('direction')->nullable();
             $table->string('level', 50)->nullable();
+            $table->date('level_up_date')->nullable();
+            $table->date('next_level_bonus')->nullable();
             $table->string('name', 50);
             $table->integer('referer_id')->nullable()->unique();
             $table->string('username', 25)->unique();

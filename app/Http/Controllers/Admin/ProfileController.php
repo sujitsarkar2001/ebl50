@@ -35,7 +35,7 @@ class ProfileController extends Controller
     {
         $this->validate($request, [
             'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
+            'password'         => 'required|min:8|confirmed'
         ]);
 
         // Get logged in user.
@@ -51,20 +51,24 @@ class ProfileController extends Controller
                 ]);
                 
                 Auth::logout();
-                notify()->success("Success", "Password Change Successfully");
-                
-                return back();
+                return response()->json([
+                    'alert'   => 'Success',
+                    'message' => 'Password Change Successfully'
+                ]);
                 
             } else {
-                notify()->warning("Sorry!", "New password can't be same as current password! ⚡️");
+                return response()->json([
+                    'alert'   => 'Warning',
+                    'message' => 'New password can not be same as current password!'
+                ]);
             }
 
         } else {
-            notify()->error("Wrong!", "Password does not match!!");
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'Password does not match!!'
+            ]);
         }
-
-        return back();
-        
     }
 
     public function updateInfo(Request $request)
@@ -77,7 +81,7 @@ class ProfileController extends Controller
             'phone'     => 'required|string|max:30'
         ]);
         
-        $user = User::findOrFail(Auth::user()->id);
+        $user = User::find(Auth::user()->id);
         
         $avatar = $request->file('avatar');
         if ($avatar) {
@@ -93,8 +97,6 @@ class ProfileController extends Controller
             }
             $avatar->move(public_path('uploads/member'), $imageName);
 
-        } else {
-            $imageName = $user->avatar;
         }
 
         $user->update([
@@ -102,35 +104,24 @@ class ProfileController extends Controller
             'username' => $request->username,
             'email'    => $request->email,
             'phone'    => $request->phone,
-            'avatar'   => $imageName
+            'avatar'   => $imageName ?? $user->avatar
         ]);
         
-        $user->userInfo->update([
-            "country"             => $request->country,
-            "present_address"     => $request->present_address,
-            "permanent_address"   => $request->permanent_address,
-            "post_code"           => $request->post_code,
-            "d_o_b"               => $request->d_o_b,
-            "gender"              => $request->gender,
-            "nid"                 => $request->nid,
-            "nominee"             => $request->nominee,
-            "nominee_relation"    => $request->nominee_relation,
-            "profession"          => $request->profession,
-            "education"           => $request->education,
-            "facebook"            => $request->facebook,
-            "address"             => $request->address,
-            "bank_name"           => $request->bank_name,
-            "bank_account_name"   => $request->bank_account_name,
-            "bank_account_number" => $request->bank_account_number,
-            "branch_name"         => $request->branch_name,
-            "bkash"               => $request->bkash,
-            "nagad"               => $request->nagad,
-            "rocket"              => $request->rocket
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Your profile info successfully updated'
         ]);
         
-        notify()->success("Your profile info successfully updated", "Success");
+    }
     
-        return redirect()->route('admin.profile.index');
-        
+    /**
+     * getInfo
+     *
+     * @return void
+     */
+    public function getInfo() 
+    {
+        $admin = User::find(auth()->id(), ['name', 'username', 'phone', 'email', 'status', 'avatar']);
+        return response()->json($admin);
     }
 }

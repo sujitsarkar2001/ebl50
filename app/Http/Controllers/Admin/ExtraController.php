@@ -50,9 +50,7 @@ class ExtraController extends Controller
     public function showLevelUser($slug)
     {
         $name = str_replace('-', ' ', $slug);
-
-        $users = User::where('is_admin', false)->where('status', true)->where('level', ucwords($name))->where('is_approved', true)->get(['name', 'username', 'avatar', 'joining_date']);
-        
-        return view('admin.level.list', compact('users', 'name'));
+        $users = User::where('is_admin', false)->where('status', true)->where('level', ucwords($name))->where('is_approved', true)->get(['name', 'username', 'level_up_date', 'avatar', 'joining_date']);
+        return response()->json($users);
     }
 }

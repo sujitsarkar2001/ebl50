@@ -1,0 +1,13 @@
+(function($){
+    $(document).ready(function(){
+        $('#form').hide();
+        $('#someTab').tab('show');
+        $('.get_start').click(function(){
+            $('#login_page_landing').fadeOut()
+            $('#form').fadeIn()
+        });
+        $('.check').click(function(){
+            $('.check').toggleClass('check-it')
+        });
+    })
+})(jQuery)

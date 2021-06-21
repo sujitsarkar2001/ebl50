@@ -4,9 +4,8 @@
 
 @push('css')
     <!-- DataTables -->
-  <link rel="stylesheet" href="/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="/assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <link rel="stylesheet" href="{{asset('/')}}assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="{{asset('/')}}assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 @endpush
 
 @section('content')
@@ -33,42 +32,6 @@
 
     <div class="row">
 
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    Search History
-                </div>
-                <form action="{{route('admin.withdraw.income.search')}}" method="get">
-                    
-                    <div class="card-body">
-                        <div class="form-row">
-                            <div class="form-group col-md-3">
-                                <input type="text" name="username" class="form-control" placeholder="Enter username">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input type="text" name="refer_id" class="form-control" placeholder="Refer ID">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input type="date" name="from_date" class="form-control">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input type="date" name="to_date" class="form-control">
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="card-footer">
-                        <div class="form-group mb-0">
-                            <button class="mt-1 btn btn-primary">
-                                <i class="fas fa-search"></i>
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
@@ -80,7 +43,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example1" class="table table-bordered table-striped">
+                    <table id="sponsor" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -91,56 +54,13 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('sponsors'))
-                                @foreach (session('sponsors') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        
-                                    </tr>
-                                @endforeach
-                            @else
-                                @foreach ($sponsors as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Refer ID</th>
-                                <th>Total Amount: 
-                                    @if (session('sponsors'))
-                                        {{session('sponsors')->sum('amount')}}
-                                    @else
-                                        {{$sponsors->sum('amount')}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
-        
+
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
@@ -152,7 +72,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example2" class="table table-bordered table-striped">
+                    <table id="generation" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -163,56 +83,11 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('generations'))
-                                @foreach (session('generations') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        
-                                    </tr>
-                                @endforeach
-                            @else
-                                @foreach ($generations as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        
-                                    </tr>
-                                @endforeach 
-                            @endif
-                            
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Refer ID</th>
-                                <th>Total Amount: 
-                                    @if (session('generations'))
-                                        
-                                    @else
-                                        {{$generations->sum('amount')}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
 
         <div class="col-md-12">
@@ -226,7 +101,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example3" class="table table-bordered table-striped">
+                    <table id="level" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -237,76 +112,11 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('levels'))
-                                @foreach (session('levels') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="{{ route('admin.withdraw.destroy', $data->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
-                                    </tr>
-                                @endforeach 
-                            @else
-                                @foreach ($levels as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        {{-- <td>
-                                            <a href="#" class="btn btn-danger btn-sm"
-                                                onclick="event.preventDefault();
-                                                document.getElementById('delete-form-{{$data->id}}').submit();" title="Delete">
-                                                <i class="nav-icon fas fa-trash-alt"></i>
-                                            </a>
-                                            <form id="delete-form-{{$data->id}}" action="{{ route('admin.withdraw.destroy', $data->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </td> --}}
-                                    </tr>
-                                @endforeach
-                            @endif
-                            
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Refer ID</th>
-                                <th>Total Amount: 
-                                    @if (session('levels'))
-                                        
-                                    @else
-                                        {{$levels->sum('amount')}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
 
         <div class="col-md-12">
@@ -320,71 +130,22 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example4" class="table table-bordered table-striped">
+                    <table id="daily" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
                                 <th>Username</th>
                                 <th>Name</th>
+                                <th>Refer ID</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('dailies'))
-                                @foreach (session('dailies') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{session('user')->username}}</td>
-                                        <td>{{session('user')->name}}</td>
-                                        <td>{{$data->rate}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        
-                                    </tr>
-                                @endforeach 
-                            @else
-                                    @php
-                                        $dailies_sum = 0;
-                                        $i = 1
-                                    @endphp
-                                @foreach($users as $user)
-                                    @foreach ($dailies[$user->id] as $data)
-                                        <tr>
-                                            <td>{{$i++}}</td>
-                                            <td>{{$user->username}}</td>
-                                            <td>{{$user->name}}</td>
-                                            <td>{{$data->rate}}</td>
-                                            <td>{{date('d-m-Y', strtotime($data->date))}}</td>
-                                        </tr>
-                                        @php
-                                            $dailies_sum += $data->rate;
-                                        @endphp
-                                    @endforeach
-                                @endforeach
-                            @endif
-                            
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Total Amount: 
-                                    @if (session('dailies'))
-                                        {{session('dailies')->sum('rate')}}
-                                    @else
-                                        {{$dailies_sum}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
 
         <div class="col-md-12">
@@ -398,7 +159,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example5" class="table table-bordered table-striped">
+                    <table id="site" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -409,58 +170,13 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('site_incomes'))
-                                @foreach (session('site_incomes') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                        
-                                    </tr>
-                                @endforeach 
-                            @else
-                                @foreach ($site_incomes as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                        
-                                    </tr>
-                                @endforeach
-                            @endif
-                            
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Refer ID</th>
-                                <th>Total Amount: 
-                                    @if (session('site_incomes'))
-                                        {{session('site_incomes')->sum('amount')}}
-                                    @else
-                                        {{$site_incomes->sum('amount')}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
-        
+
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
@@ -472,7 +188,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example6" class="table table-bordered table-striped">
+                    <table id="share" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>SL</th>
@@ -483,59 +199,16 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (session('share_incomes'))
-                                @foreach (session('share_incomes') as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                        
-                                    </tr>
-                                @endforeach 
-                            @else
-                                @foreach ($share_incomes as $key => $data)
-                                    <tr>
-                                        <td>{{$key + 1}}</td>
-                                        <td>{{$data->user->username}}</td>
-                                        <td>{{$data->user->name}}</td>
-                                        <td>{{$data->user->referer_id}}</td>
-                                        <td>{{$data->amount}}</td>
-                                        <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                        
-                                    </tr>
-                                @endforeach
-                            @endif
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>SL</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Refer ID</th>
-                                <th>Total Amount: 
-                                    @if (session('share_incomes'))
-                                        {{session('share_incomes')->sum('amount')}}
-                                    @else
-                                        {{$share_incomes->sum('amount')}}
-                                    @endif
-                                </th>
-                                <th>Date</th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+              <!-- /.card -->
         </div>
 
     </div>
-      
-      <!-- /.card -->    
+
+    <!-- /.card -->
 
 </section>
 <!-- /.content -->
@@ -544,49 +217,108 @@
 
 @push('js')
     <!-- DataTables  & Plugins -->
-    <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/jszip/jszip.min.js"></script>
-    <script src="/assets/plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="/assets/plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="/assets/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="{{asset('/')}}assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{asset('/')}}assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{asset('/')}}assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="{{asset('/')}}assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
     <script>
-        $(function () { 
-            $("#example1").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            
-            $("#example2").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
-            
-            $("#example3").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example3_wrapper .col-md-6:eq(0)');
-            
-            $("#example4").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example4_wrapper .col-md-6:eq(0)');
-            
-            $("#example5").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
+        $(function () {
 
-            $("#example6").DataTable({
-            "responsive": true, "lengthChange": false, "autoWidth": false,
-            "buttons": ["csv", "excel", "pdf", "print",]
-            }).buttons().container().appendTo('#example6_wrapper .col-md-6:eq(0)');
+            $('#sponsor').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.sponsor.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
+
+            $('#generation').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.generation.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
+
+            $('#daily').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.daily.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
+
+            $('#level').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.level.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
+
+            $('#site').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.site.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
+
+            $('#share').DataTable({
+                processing: true,
+                serverSide: true,
+                "responsive": true,
+                "autoWidth": false,
+                ajax: '{!! route('admin.share.income.data') !!}',
+                columns: [
+                    {data: 'DT_RowIndex', searchable: false},
+                    {data: 'user.name', name: 'user.name'},
+                    {data: 'user.username', name: 'user.username'},
+                    {data: 'user.referer_id', name: 'user.referer_id'},
+                    {data: 'amount', name: 'amount'},
+                    {data: 'date', name: 'date'}
+                ]
+            });
         })
     </script>
 @endpush

@@ -1,112 +1,158 @@
-@extends('layouts.user.app')
+<div class="register">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card p-0">
+                    <div class="card-header">
+                        <h4 class="card-title">Contact us</h4>
+                    </div>
+                    <form action="{{route('connection.store.contact')}}" method="post" id="contact">
+                        @csrf
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input required type="email" name="email" id="email" class="form-control" placeholder="example@gmail.com">
+                                <small class="form-text text-danger email"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input required type="text" name="subject" id="subject" class="form-control" placeholder="Enter subject">
+                                <small class="form-text text-danger subject"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea required name="message" id="message" rows="6" class="form-control"></textarea>
+                                <small class="form-text text-danger message"></small>
+                            </div>
 
-@section('title', 'Contact')
-
-@section('content')
-
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="">Contact</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                <li class="breadcrumb-item active">Contact</li>
-                </ol>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <input type="submit" value="Submit" />
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div><!-- /.container-fluid -->
-</section>
-
-<!-- Main content -->
-<section class="content">
-
-    <!-- Default box -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Contact</h3>
-
-        </div>
-        <form action="" method="post" id="contact">
-            @csrf
-            <div class="card-body">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="example@gmail.com">
-                        <small class="form-text text-danger email-error"></small>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="subject">Subject</label>
-                        <input type="text" name="subject" id="subject" class="form-control" placeholder="Enter subject">
-                        <small class="form-text text-danger subject-error"></small>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea name="message" id="message" rows="6" class="form-control"></textarea>
-                    <small class="form-text text-danger message-error"></small>
-                </div>
-                <div class="form-group alert-message d-none">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>Congratulations!!</strong> Receive your contact information successfully
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                </div>
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-                <button type="submit" class="mt-1 btn btn-primary">Submit</button>
-            </div>
-        </form>
-        
-        
     </div>
-    <!-- /.card -->
+</div>
 
-</section>
-<!-- /.content -->
 
-@endsection
 
-@push('js')
-    <script>
-        $(document).on('submit', '#contact', function (e) {
-            e.preventDefault();
-            let data = $(this).serialize();
-            $('small.form-text').text('');
-            $('.card-footer button').addClass('disabled')
-            $.ajax({
-                type: "POST",
-                url: "{{ route('connection.store.contact') }}",
-                data: data,
-                dataType: "JSON",
-                success: function (response) {
-                    if (response.alert == 'success') {
-                        $('.alert-message').removeClass('d-none')
-                        $('input.form-control').val('')
-                        $('textarea.form-control').val('')
-                        $('.card-footer button').removeClass('disabled')
+<script>
+
+    $(document).on('submit', '#contact', function(e) {
+        e.preventDefault();
+
+        $('small.form-text').text('');
+        $('.form-control').removeClass('is-invalid');
+
+        let method   = $(this).attr('method');
+        let action   = $(this).attr('action');
+        let formData = $(this).serialize();
+
+        console.log(formData)
+
+        $.ajax({
+            type: method,
+            url: action,
+            data: formData,
+            dataType: "JSON",
+            beforeSend: function() {
+                $('#loading-image').removeClass('d-none').addClass('d-block')
+            },
+            success: function (response) {
+                $('#contact').trigger("reset");
+
+                $.toast({
+                    heading: response.alert,
+                    text: response.message,
+                    icon: response.alert.toLowerCase(),
+                    position: 'top-right',
+                    stack: false
+                });
+            },
+            complete: function() {
+                $('#loading-image').addClass('d-none').removeClass('d-block')
+            },
+            error: function (xhr) {
+                if (xhr.status === 0) {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Not connected Please verify your network connection.',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr.status == 404) {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'The requested data not found. [404]',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr.status == 500) {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Internal Server Error [500].',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr === 'parsererror') {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Requested JSON parse failed.',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr === 'timeout') {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Requested Time out.',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr === 'abort') {
+                    $.toast({
+                        heading: 'Error',
+                        text: 'Request aborted.',
+                        icon: 'error',
+                        position: 'top-right',
+                        stack: false
+                    });
+
+                } else if (xhr.status == 422) {
+                    if (typeof(xhr.responseJSON.errors) !== 'undefined') {
+
+                        $.each(xhr.responseJSON.errors, function (key, error) {
+                            $('small.'+key+'').text(error);
+                            $('#'+key+'').addClass('is-invalid');
+                        });
+
+                        if (typeof(xhr.responseJSON.message) !== 'undefined') {
+                            $.toast({
+                                heading: 'Error',
+                                text: xhr.responseJSON.message,
+                                icon: 'error',
+                                position: 'top-right',
+                                stack: false
+                            });
+                        }
                     }
-                },
-                error: function(e) {
-                    $('.card-footer button').removeClass('disabled')
-                    if (typeof e.responseJSON.errors.email != 'undefined') {
-                        $('small.email-error').text(e.responseJSON.errors.email[0])
-                    }
-                    if (typeof e.responseJSON.errors.subject != 'undefined') {
-                        $('small.subject-error').text(e.responseJSON.errors.subject[0])
-                    }
-                    if (typeof e.responseJSON.errors.message != 'undefined') {
-                        $('small.message-error').text(e.responseJSON.errors.message[0])
-                    }
+
+                } else {
+                    return ('Uncaught Error.\n' + xhr.responseText);
                 }
-            });
-        })
-    </script>
-@endpush
+            }
+        });
+    })
+</script>

@@ -26,22 +26,30 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request)
     {
-        $this->validate($request, [ 
+        $this->validate($request, [
             'username' => 'required'
         ]);
-        
+
         $user = User::where('username', $request->username)->first();
-        
+
         if (!$user) {
-            return back()->with('error', 'Username is not valid');
+            return response()->json([
+                'alert'   => 'Error',
+                'message' => 'Username is not valid',
+            ]);
         }
 
         $response = Password::sendResetLink($request->only(['username']), function($user, $token) use($request) {
             $user->notify(new ResetPasswordNotification($user, $token));
         });
 
-        return $response == Password::RESET_LINK_SENT
+        Password::RESET_LINK_SENT
                     ? $this->sendResetLinkResponse($request, $response)
                     : $this->sendResetLinkFailedResponse($request, $response);
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Password reset link send your email address'
+        ]);
     }
 }

@@ -486,7 +486,7 @@
                         }
                         this.s.rowData.totalOptions++;
                     }
-                    return;
+
                 }
                 else {
                     throw new Error('display and filter not the same length');
@@ -507,7 +507,7 @@
                 else {
                     bins[filter]++;
                     this.s.rowData.totalOptions++;
-                    return;
+
                 }
             }
             // Otherwise we must just be adding an option
@@ -1160,7 +1160,7 @@
                 else {
                     bins[filter]++;
                     this.s.rowData.totalOptions++;
-                    return;
+
                 }
             }
         };

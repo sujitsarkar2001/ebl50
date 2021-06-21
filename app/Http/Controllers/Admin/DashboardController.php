@@ -13,63 +13,48 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Direction;
+use App\Models\DailyIncome;
+use Illuminate\Http\Response;
 
 class DashboardController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function __invoke(Request $request)
     {
         $now       = Carbon::now();
         $weekStart = $now->startOfWeek(Carbon::SATURDAY)->format('Y-m-d');
         $weekEnd   = $now->endOfWeek(Carbon::FRIDAY)->format('Y-m-d');
-        
+
         $site_income = SiteIncome::sum('amount');
 
         $income_balance = IncomeBalance::sum('amount');
 
         $shop_balance   = ShopBalance::sum('amount');
-        
+
         $total_member        = User::where('is_admin', false)->count();
         $total_active_member = User::where('is_admin', false)->where('is_approved', true)->count();
         $total_left_member   = User::where('direction', Direction::Left)->count();
         $total_middle_member = User::where('direction', Direction::Middle)->count();
         $total_right_member  = User::where('direction', Direction::Right)->count();
-        
+
         $today_sponsor_income = SponsorIncome::where('date', date('Y-m-d'))->sum('amount');
         $week_sponsor_income  = SponsorIncome::where('date', '>=', $weekStart)
                             ->where('date', '<=', $weekEnd)
                             ->sum('amount');
         $month_sponsor_income = SponsorIncome::where('month', date('F'))->where('year', date('Y'))->sum('amount');
         $total_sponsor_income = SponsorIncome::sum('amount');
-        
-        $today_video_income = User::with('videos')
-                    ->get()->reduce( function($carry, $item){
-            return $carry + $item->videos->where('date', date('Y-m-d'))->sum('rate');
-        });
-        $week_video_income = User::with('videos')
-                    ->get()->reduce( function($carry, $item){
-            $now       = Carbon::now();
-            $weekStart = $now->startOfWeek(Carbon::SATURDAY)->format('Y-m-d');
-            $weekEnd   = $now->endOfWeek(Carbon::FRIDAY)->format('Y-m-d');
-        
-                    return $carry + $item->videos
-                        ->where('date', '>=', $weekStart)
-                        ->where('date', '<=', $weekEnd)
-                        ->sum('rate');
-        });
-        $month_video_income = User::with('videos')
-                    ->get()->reduce( function($carry, $item){
-            return $carry + $item->videos->where('month', date('F'))->where('year', date('Y'))->sum('rate');
-        });
-        $total_video_income = User::with('videos')
-                    ->get()->reduce( function($carry, $item){
-            return $carry + $item->videos->sum('rate');
-        });
+
+        $today_daily_income = DailyIncome::where('date', date('Y-m-d'))->sum('amount');
+        $week_daily_income  = DailyIncome::where('date', '>=', $weekStart)
+                            ->where('date', '<=', $weekEnd)
+                            ->sum('amount');
+        $month_daily_income = DailyIncome::where('month', date('F'))->where('year', date('Y'))->sum('amount');
+        $total_daily_income = DailyIncome::sum('amount');
 
         $today_generation_income = GenerationIncome::where('date', date('Y-m-d'))->sum('amount');
         $week_generation_income  = GenerationIncome::where('date', '>=', $weekStart)
@@ -77,7 +62,7 @@ class DashboardController extends Controller
                                 ->sum('amount');
         $month_generation_income = GenerationIncome::where('month', date('F'))->where('year', date('Y'))->sum('amount');
         $total_generation_income = GenerationIncome::sum('amount');
-        
+
         $month_level_income = LevelIncome::where('month', date('F'))->where('year', date('Y'))->sum('amount');
         $total_level_income = LevelIncome::sum('amount');
 
@@ -114,7 +99,7 @@ class DashboardController extends Controller
         $total_share_package_income = User::where('is_approved', true)
                                     ->where('register_package', '>=', setting('share_package'))
                                     ->sum('register_package');
-        
+
         return view('admin.dashboard', compact(
             'total_member',
             'total_active_member',
@@ -128,10 +113,10 @@ class DashboardController extends Controller
             'week_sponsor_income',
             'month_sponsor_income',
             'total_sponsor_income',
-            'today_video_income',
-            'week_video_income',
-            'month_video_income',
-            'total_video_income',
+            'today_daily_income',
+            'week_daily_income',
+            'month_daily_income',
+            'total_daily_income',
             'today_generation_income',
             'week_generation_income',
             'month_generation_income',

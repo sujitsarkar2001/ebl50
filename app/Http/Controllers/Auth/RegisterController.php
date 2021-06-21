@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\IncomeBalance;
+use App\Models\ShopBalance;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class RegisterController extends Controller
@@ -47,52 +48,13 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    // protected function validator(array $data)
-    // {
-    //     return Validator::make($data, [
-    //         'sponsor_id' => ['required', 'string', 'max:50'],
-    //         'name' => ['required', 'string', 'max:50'],
-    //         'username' => ['required', 'string', 'max:50', 'unique:users,username'],
-    //         'email' => ['required', 'string', 'email', 'max:255'],
-    //         'country_code' => ['required', 'string', 'max:5'],
-    //         'phone' => ['required', 'digits:10'],
-    //         'side' => ['required', 'string', 'max:20'],
-    //         'register_package' => ['required', 'numeric'],
-    //         'password' => ['required', 'string', 'min:8', 'confirmed']
-    //     ]);
-    // }
-
-    // /**
-    //  * Create a new user instance after a valid registration.
-    //  *
-    //  * @param  array  $data
-    //  * @return \App\Models\User
-    //  */
-    // protected function create(array $data)
-    // {
-    //     $check = User::where('sponsor_id', $data['sponsor_id'])->first();
         
-    //     if ($check) {
-    //         return User::create([
-    //             'parent_id'        => $check->id,
-    //             'sponsor_id'       => $data['sponsor_id'],
-    //             'name'             => $data['name'],
-    //             'username'         => $data['username'],
-    //             'email'            => $data['email'],
-    //             'country_code'     => $data['country_code'],
-    //             'phone'            => $data['phone'],
-    //             'side'             => $data['side'],
-    //             'register_package' => $data['register_package'],
-    //             'password'         => Hash::make($data['password']),
-    //         ]);
-    //     }
-    // }
+    /**
+     * user register
+     *
+     * @param  mixed $request
+     * @return void
+     */
 
     public function register(Request $request)
     {
@@ -108,11 +70,11 @@ class RegisterController extends Controller
             'register_package' => 'required|numeric',
             'password'         => 'required|string|min:8|confirmed'
         ]);
-        
+
         $sponsor = User::where('referer_id', $request->sponsor_id)->first();
-        
+
         if ($sponsor) {
-            
+
             if ($request->placement_id != null) {
                 $placement = User::where('referer_id', $request->placement_id)->first();
 
@@ -126,25 +88,31 @@ class RegisterController extends Controller
                             $placement_id = $placement->id;
                             while(true){
                                 $child = $child->children()->where(['direction' => $request->direction])->first();
-                                
+
                                 if ($child) {
                                     $placement_id = $child->id;
-                                } else { 
+                                } else {
                                     break;
                                 }
                             }
                         } else {
-                            $activeUser = $activeUser->sponsor; 
+                            $activeUser = $activeUser->sponsor;
                         }
                     }
                     if (!isset($placement_id)) {
-                        return back()->with('wrong', 'Placement id does not match');
+                        return response()->json([
+                            'alert'   => 'Error',
+                            'message' => 'Placement id does not match'
+                        ]);
                     }
                 }
                 else {
-                    return back()->with('wrong', 'Placement id not found');
+                    return response()->json([
+                        'alert'   => 'Error',
+                        'message' => 'Placement id not found'
+                    ]);
                 }
-            } 
+            }
             else {
                 $child = $sponsor;
                 $placement_id = $sponsor->id;
@@ -152,7 +120,8 @@ class RegisterController extends Controller
                     $child = $child->children()->where(['direction' => $request->direction])->first();
                     if ($child) {
                         $placement_id = $child->id;
-                    }  else { 
+                        
+                    }  else {
                         break;
                     }
                 }
@@ -162,6 +131,8 @@ class RegisterController extends Controller
                 'placement_id'     => $placement_id,
                 'sponsor_id'       => $sponsor->id,
                 'direction'        => $request->direction,
+                'level'            => 'No Level',
+                'next_level_bonus' => date('Y-m-d'),
                 'name'             => $request->name,
                 'referer_id'       => rand(pow(10, 5-1), pow(10, 5)-1),
                 'username'         => $request->username,
@@ -181,55 +152,24 @@ class RegisterController extends Controller
             ]);
 
             // Create Income balance account in user
-            \App\Models\IncomeBalance::create([
+            IncomeBalance::create([
                 'user_id' => $user->id
             ]);
 
             // Create Shop balance account in user
-            \App\Models\ShopBalance::create([
+            ShopBalance::create([
                 'user_id' => $user->id
             ]);
-
-            return back()->with('success', 'Your registration successfully done, please wait to check admin your account.');
-        } 
+            return response()->json([
+                'alert'   => 'Success',
+                'message' => 'Your registration successfully done, please wait to check admin your account.'
+            ]);
+        }
         else {
-            return back()->with('wrong', 'Sponsor id not available, please try to correct reference number');
+            return response()->json([
+                'alert'   => 'Error',
+                'message' => 'Sponsor id not available, please try to correct reference number'
+            ]);
         }
     }
-
-    // if ($sponsor->id == $placement->sponsor_id) {
-    //     $child = $placement;
-    //     $placement_id = $placement->id;
-    //     while(true){
-    //         $child = $child->children()->where(['direction' => $request->direction])->first();
-            
-    //         if ($child) {
-    //             $placement_id = $child->id;
-    //         } else { 
-    //             break;
-    //         }
-    //     }
-    // } 
-    // else {
-    //     $activeUser = $placement->sponsor;
-
-    //     for ($i = 0; $i < 11 && $activeUser; $i++)
-    //     {
-    //         if ($sponsor->id == $activeUser->sponsor_id) {
-    //             $child = $placement;
-    //             $placement_id = $placement->id;
-    //             while(true){
-    //                 $child = $child->children()->where(['direction' => $request->direction])->first();
-                    
-    //                 if ($child) {
-    //                     $placement_id = $child->id;
-    //                 } else { 
-    //                     break;
-    //                 }
-    //             }
-    //         } else {
-    //             $activeUser = $activeUser->sponsor; 
-    //         }
-    //     }
-    // }
 }

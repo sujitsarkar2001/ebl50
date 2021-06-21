@@ -1,446 +1,403 @@
-@extends('layouts.user.app')
+<style>
+    .project-tab {
+        padding: 10%;
+        margin-top: -8%;
+    }
+    .project-tab #tabs{
+        background: #007b5e;
+        color: #eee;
+    }
+    .project-tab #tabs h6.section-title{
+        color: #eee;
+    }
+    .project-tab #tabs .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+        color: #0062cc;
+        background-color: transparent;
+        border-color: transparent transparent #f3f3f3;
+        border-bottom: 3px solid !important;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .project-tab .nav-link {
+        border: 1px solid transparent;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+        color: #0062cc;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .project-tab .nav-link:hover {
+        border: none;
+    }
+    .project-tab thead{
+        background: #f3f3f3;
+        color: #333;
+    }
+    .project-tab a{
+        text-decoration: none;
+        color: #333;
+        font-weight: 600;
+    }
+</style>
+<div class="register">
+    <div class="container">
 
-@section('title', 'Update Profile')
-
-@push('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css" integrity="sha512-EZSUkJWTjzDlspOoPSpUFR0o0Xy7jdzW//6qhUkoZ9c4StFkVsp9fbbd0O06p9ELS3H486m4wmrCELjza4JEog==" crossorigin="anonymous" />
-    <style>
-        .dropify-wrapper .dropify-message p {
-            font-size: initial;
-        }
-    </style>
-@endpush
-
-@section('content')
-
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>My Profile</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <nav>
+                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-basic" data-toggle="tab" href="#basic" role="tab" aria-controls="basic" aria-selected="true">Basic Information</a>
+                        <a class="nav-item nav-link" id="nav-contact" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact Information</a>
+                        <a class="nav-item nav-link" id="nav-bank" data-toggle="tab" href="#bank" role="tab" aria-controls="bank" aria-selected="false">Bank Information</a>
+                        <a class="nav-item nav-link" id="nav-mobile" data-toggle="tab" href="#mobile" role="tab" aria-controls="mobile" aria-selected="false">Mobile Bank Information</a>
+                    </div>
+                </nav>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">My Profile</li>
-                </ol>
-            </div>
+
+            <form action="{{route('profile.update.info')}}" id="submit" method="post" style="width: 100%">
+                @csrf
+                @method('PUT')
+                <div class="tab-content mt-3" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="nav-basic">
+                        <div class="row">
+                            <div class="col-md-8 offset-md-2">
+                                <div class="card p-0">
+                                    <div class="card-body">
+                                        <div class="form-row">
+
+                                            <div class="form-group col-md-6">
+                                                <label for="name">Name <span class="text-danger">*</span></label>
+                                                <input type="text" name="name" class="form-control" placeholder="Name" value="{{$member->name}}">
+                                                <small class="form-text text-danger name"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="username">Username <span class="text-danger">*</span></label>
+                                                <input type="text" name="username" class="form-control" placeholder="Username" value="{{$member->username}}">
+                                                <small class="form-text text-danger username"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="email">Email <span class="text-danger">*</span></label>
+                                                <input type="email" name="email" id="email" class="form-control" placeholder="example@gmail.com" value="{{$member->email}}">
+                                                <small class="form-text text-danger email"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="post_code">Post Code <span class="text-danger">*</span></label>
+                                                <input type="number" name="post_code" id="post_code" class="form-control" maxlength="25" placeholder="Post Code" value="{{$member->userInfo->post_code}}">
+                                                <small class="form-text text-danger post_code"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="phone">Phone <span class="text-danger">*</span></label>
+                                                <input type="text" name="phone" id="phone" class="form-control" maxlength="25" placeholder="Phone Number" value="{{$member->phone}}">
+                                                <small class="form-text text-danger phone"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="country">Country <span class="text-danger">*</span></label>
+                                                <input type="text" id='country' name='country' class="form-control" placeholder="Country" value="{{$member->userInfo->country}}">
+                                                <small class="form-text text-danger country"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="register_package">Register Package <span class="text-danger">*</span></label>
+                                                <select name="register_package" id="register_package" class="form-control">
+                                                    <option value="">Select Package</option>
+                                                    <option value="{{setting('single_package')}}" {{$member->register_package == setting('single_package') ? 'selected':''}}>Single Package ({{setting('single_package')}})</option>
+                                                    <option value="{{setting('share_package')}}" {{$member->register_package == setting('share_package') ? 'selected':''}}>Share Package ({{setting('share_package')}})</option>
+                                                </select>
+
+                                                <small class="form-text text-danger register_package"></small>
+                                            </div>
+
+                                            <div class="form-row col-md-6">
+                                                <div class="form-group col-md-12">
+                                                    <label for="avatar">Profile Picture</label>
+                                                    <input type="file" name="avatar" id="avatar" class="form-control">
+
+                                                    <small class="form-text text-danger avatar"></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show" id="contact" role="tabpanel" aria-labelledby="nav-contact">
+                        <div class="row">
+                            <div class="col-md-8 offset-md-2">
+                                <div class="card p-0">
+                                    <div class="card-body">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="d_o_b">Date of Birth</label>
+                                                <input type="date" name="d_o_b" id="d_o_b" class="form-control" value="{{$member->userInfo->d_o_b}}">
+
+                                                <small class="form-text text-danger d_o_b"></small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="gender">Gender</label>
+                                                <select name="gender" id="gender" class="form-control">
+                                                    <option value="">Select Gender</option>
+                                                    <option value="Male" {{$member->userInfo->gender == 'Male' ? 'selected':''}}>Male</option>
+                                                    <option value="Female" {{$member->userInfo->gender == 'Female' ? 'selected':''}}>Female</option>
+                                                </select>
+                                                <small class="form-text text-danger gender"></small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="nid">NID</label>
+                                                <input type="text" name="nid" id="nid" class="form-control" placeholder="NID" value="{{$member->userInfo->nid}}">
+
+                                                <small class="form-text text-danger nid"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="nominee">Nominee</label>
+                                                <input type="text" name="nominee" id="nominee" class="form-control" placeholder="Nominee" value="{{$member->userInfo->nominee}}">
+
+                                                <small class="form-text text-danger education"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="nominee_relation">Nominee Relation</label>
+                                                <input type="text" name="nominee_relation" id="nominee_relation" class="form-control" placeholder="Nominee Relation" value="{{$member->userInfo->nominee_relation}}">
+
+                                                <small class="form-text text-danger nominee_relation"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="profession">Profession</label>
+                                                <input type="text" name="profession" id="profession" class="form-control" placeholder="Profession" value="{{$member->userInfo->profession}}">
+
+                                                <small class="form-text text-danger profession"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="education">Education</label>
+                                                <input type="text" name="education" id="education" class="form-control" placeholder="Education" value="{{$member->userInfo->education}}">
+
+                                                <small class="form-text text-danger education"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="facebook">Facebook</label>
+                                                <input type="text" name="facebook" id="facebook" class="form-control" placeholder="Facebook" value="{{$member->userInfo->facebook}}">
+
+                                                <small class="form-text text-danger facebook"></small>
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="present_address">Present Address</label>
+                                                <input type="text" id='present_address' name='present_address' class="form-control" placeholder="Present address" value="{{$member->userInfo->present_address}}">
+                                                <small class="form-text text-danger present_address"></small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="permanent_address">Permanent Address</label>
+                                                <input type="text" id='permanent_address' name='permanent_address' class="form-control" placeholder="Permanent address" value="{{$member->userInfo->permanent_address}}">
+                                                <small class="form-text text-danger permanent_address"></small>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show" id="bank" role="tabpanel" aria-labelledby="nav-bank">
+                        <div class="row">
+                            <div class="col-md-6 offset-md-3">
+                                <div class="card p-0">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="bank_name">Bank Name</label>
+                                            <input type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Bank Name" value="{{$member->userInfo->bank_name}}">
+
+                                            <small class="form-text text-danger bank_name"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="bank_account_name">Bank Account Name</label>
+                                            <input type="text" name="bank_account_name" id="bank_account_name" class="form-control" placeholder="Bank account name" value="{{$member->userInfo->bank_account_name}}">
+
+                                            <small class="form-text text-danger bank_name"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="bank_account_number">Bank Account Number</label>
+                                            <input type="text" name="bank_account_number" id="bank_account_number" class="form-control" placeholder="Bank account number" value="{{$member->userInfo->bank_account_number}}">
+
+                                            <small class="form-text text-danger bank_account_number"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="branch_name">Branch Name</label>
+                                            <input type="text" name="branch_name" id="branch_name" class="form-control" placeholder="Branch name" value="{{$member->userInfo->branch_name}}">
+
+                                            <small class="form-text text-danger branch_name"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show" id="mobile" role="tabpanel" aria-labelledby="nav-mobile">
+                        <div class="row">
+                            <div class="col-md-6 offset-md-3">
+                                <div class="card p-0">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="bkash">Bkash</label>
+                                            <input type="number" name="bkash" id="bkash" class="form-control" placeholder="Bkash" value="{{$member->userInfo->bkash}}">
+
+                                            <small class="form-text text-danger bkash"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="nagad">Nagad</label>
+                                            <input type="number" name="nagad" id="nagad" class="form-control" placeholder="Nagad" value="{{$member->userInfo->nagad}}">
+
+                                            <small class="form-text text-danger nagad"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="rocket">Rocket</label>
+                                            <input type="number" name="rocket" id="rocket" class="form-control" placeholder="Rocket" value="{{$member->userInfo->rocket}}">
+
+                                            <small class="form-text text-danger rocket"></small>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <input type="submit" value="Update">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
         </div>
-    </div><!-- /.container-fluid -->
-</section>
+   </div>
+</div>
 
-<!-- Main content -->
-<section class="content">
+<script>
+    $(document).ready(function () {
 
-    <!-- Default box -->
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="card-title">My Profile</h3>
-                </div>
-            </div>
-        </div>
-        <form action="{{route('profile.update.info')}}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            
-            <div class="card-body">
+        $(document).on('submit', '#submit', function(e) {
+            e.preventDefault();
 
-                <div class="row">
-                    <div class="col-md-6">
-                    
-                        <div class="col-md-12">
-                            <div class="card card-success">
-                                <div class="card-header">
-                                    <h4 class="card-title">Profile Image</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <input type="file" name="avatar" id="avatar"class="form-control @error('avatar') is-invalid @enderror" data-default-file="{{'/uploads/member/'.$user->avatar}}">
-                                        @error('avatar')
-                                            <div class="invalid-feedback text-danger d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            $('small.form-text').text('')
+            $('.form-control').removeClass('is-invalid');
 
-                        <div class="col-md-12">
-                            <div class="card card-success">
-                                <div class="card-header">
-                                    <h4 class="card-title">Basic Information</h4>
-                                </div>
-                                <div class="card-body">
-                                    
-                                    <div class="form-group">
-                                        <label for="sponsor_id">Sponsor ID</label>
-                                        <input type="text" name="sponsor_id" id="sponsor_id" class="form-control @error('sponsor_id') is-invalid @enderror" value="{{$user->sponsor->referer_id ?? old('sponsor_id')}}" maxlength="25" min="0" placeholder="Enter Sponsor ID" @isset($user) readonly @endisset>
-                                        @error('sponsor_id')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                    
-                                    <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{$user->name ?? old('name')}}" placeholder="Name">
-                                        @error('name')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="username">Username</label>
-                                        <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" value="{{$user->username ?? old('username')}}" placeholder="Username">
-                                        @error('username')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{$user->email ?? old('email')}}" placeholder="example@gmail.com">
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+            let method   = $(this).attr('method')
+            let action   = $(this).attr('action')
+            var formData = $(this).serialize();
 
-                                    <div class="form-group">
-                                        <label for="post_code">Post Code</label>
-                                        <input type="number" name="post_code" id="post_code" class="form-control @error('post_code') is-invalid @enderror" maxlength="25" value="{{$user->userInfo->post_code ?? old('post_code')}}" placeholder="Post Code">
-                                        @error('post_code')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+            $.ajax({
+                type: method,
+                url: action,
+                data: formData,
+                dataType: "JSON",
+                beforeSend: function() {
+                    $('#loading-image').removeClass('d-none').addClass('d-block')
+                },
+                success: function (response) {
+                    $.toast({
+                        heading: response.alert,
+                        text: response.message,
+                        icon: response.alert.toLowerCase(),
+                        position: 'top-right',
+                        stack: false
+                    });
+                },
+                complete: function() {
+                    $('#loading-image').addClass('d-none').removeClass('d-block')
+                },
+                error: function (xhr) {
+                    if (xhr.status === 0) {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Not connected Please verify your network connection.',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                                    <div class="form-group">
-                                        <label for="phone">Phone</label>
-                                        <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" maxlength="25" value="{{$user->phone ?? old('phone')}}" placeholder="Phone Number">
-                                        @error('phone')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="country">Country</label>
-                                        <input type="text" id='country' name='country' class="form-control @error('country') is-invalid @enderror" value="{{$user->userInfo->country ?? old('country')}}" placeholder="Country">
-                                        @error('country')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+                    } else if (xhr.status == 404) {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'The requested data not found. [404]',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                                    <div class="form-group">
-                                        <label for="direction">Side</label>
-                                        <select name="direction" id="direction" class="form-control @error('direction') is-invalid @enderror" @isset($user) disabled @endisset>
-                                            <option value="">Select Side</option>
-                                            <option value="1" @isset($user) {{$user->direction == 1 ? 'selected':''}} @endisset>Left Side</option>
-                                            <option value="2" @isset($user) {{$user->direction == 2 ? 'selected':''}} @endisset>Middle Side</option>
-                                            <option value="3" @isset($user) {{$user->direction == 3 ? 'selected':''}} @endisset>Right Side</option>
-                                        </select>
-                                        
-                                        @error('direction')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                    
-                                    <div class="form-group">
-                                        <label for="register_package">Register Package</label>
-                                        <select name="register_package" id="register_package" class="form-control @error('register_package') is-invalid @enderror">
-                                            <option value="">Select Package</option>
-                                            <option value="{{setting('single_package')}}" @isset($user) {{$user->register_package == setting('single_package') ? 'selected':''}} @endisset>Single Package ({{setting('single_package')}})</option>
-                                            <option value="{{setting('share_package')}}" @isset($user) {{$user->register_package == setting('share_package') ? 'selected':''}} @endisset>Share Package ({{setting('share_package')}})</option>
-                                        </select>
-                                        
-                                        @error('register_package')
-                                            <span class="invalid-feedback d-block" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    } else if (xhr.status == 500) {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Internal Server Error [500].',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                    </div>
+                    } else if (xhr === 'parsererror') {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Requested JSON parse failed.',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                    <div class="col-md-6">
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Contact Information (All field is optional)</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="d_o_b">Date of Birth</label>
-                                    <input type="date" name="d_o_b" id="d_o_b" class="form-control @error('d_o_b') is-invalid @enderror" value="{{$user->userInfo->d_o_b ?? old('d_o_b')}}">
-                                    
-                                    @error('d_o_b')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="gender">Gender</label>
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="male" name="gender" @isset($user) {{$user->userInfo->gender == 'Male' ? 'checked':''}} @endisset value="Male" class="custom-control-input">
-                                                <label for="male" class="custom-control-label">Male</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="female" name="gender" @isset($user) {{$user->userInfo->gender == 'Female' ? 'checked':''}} @endisset value="Female" class="custom-control-input">
-                                                <label for="female" class="custom-control-label">Female</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="custom" name="gender" @isset($user) {{$user->userInfo->gender == 'Custom' ? 'checked':''}} @endisset value="Custom" class="custom-control-input">
-                                                <label for="custom" class="custom-control-label">Custom</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @error('gender')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="nid">NID</label>
-                                    <input type="text" name="nid" id="nid" class="form-control @error('nid') is-invalid @enderror" placeholder="NID" value="{{$user->userInfo->nid ?? old('nid')}}">
-                                    
-                                    @error('nid')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="nominee">Nominee</label>
-                                    <input type="text" name="nominee" id="nominee" class="form-control @error('nominee') is-invalid @enderror" placeholder="Nominee" value="{{$user->userInfo->nominee ?? old('nominee')}}">
-                                    
-                                    @error('nominee')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                
-                                <div class="form-group">
-                                    <label for="nominee_relation">Nominee Relation</label>
-                                    <input type="text" name="nominee_relation" id="nominee_relation" class="form-control @error('nominee_relation') is-invalid @enderror" placeholder="Nominee Relation" value="{{$user->userInfo->nominee_relation ?? old('nominee_relation')}}">
-                                    
-                                    @error('nominee_relation')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="profession">Profession</label>
-                                    <input type="text" name="profession" id="profession" class="form-control @error('profession') is-invalid @enderror" placeholder="Nominee" value="{{$user->userInfo->profession ?? old('profession')}}">
-                                    
-                                    @error('profession')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                    } else if (xhr === 'timeout') {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Requested Time out.',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                                <div class="form-group">
-                                    <label for="education">Education</label>
-                                    <input type="text" name="education" id="education" class="form-control @error('education') is-invalid @enderror" placeholder="Education" value="{{$user->userInfo->education ?? old('education')}}">
-                                    
-                                    @error('education')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="facebook">Facebook</label>
-                                    <input type="text" name="facebook" id="facebook" class="form-control @error('facebook') is-invalid @enderror" placeholder="Facebook" value="{{$user->userInfo->facebook ?? old('facebook')}}">
-                                    
-                                    @error('facebook')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="present_address">Present Address</label>
-                                    <input type="text" id='present_address' name='present_address' class="form-control @error('present_address') is-invalid @enderror" placeholder="Present address" value="{{$user->userInfo->present_address ?? old('present_address')}}">
-                                    @error('present_address')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <label for="permanent_address">Permanent Address</label>
-                                    <input type="text" id='permanent_address' name='permanent_address' class="form-control @error('permanent_address') is-invalid @enderror" placeholder="Permanent address" value="{{$user->userInfo->permanent_address ?? old('permanent_address')}}">
-                                    @error('permanent_address')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                    } else if (xhr === 'abort') {
+                        $.toast({
+                            heading: 'Error',
+                            text: 'Request aborted.',
+                            icon: 'error',
+                            position: 'top-right',
+                            stack: false
+                        });
 
-                            </div>
-                        </div>
-                    </div>
+                    } else if (xhr.status == 422) {
+                        if (typeof(xhr.responseJSON.errors) !== 'undefined') {
 
-                    <div class="col-md-6">
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Bank Information(All field is optional)</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="bank_name">Bank Name</label>
-                                    <input type="text" name="bank_name" id="bank_name" class="form-control @error('bank_name') is-invalid @enderror" placeholder="Bank Name" value="{{$user->userInfo->bank_name ?? old('bank_name')}}">
-                                    
-                                    @error('bank_name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="bank_account_name">Bank Account Name</label>
-                                    <input type="text" name="bank_account_name" id="bank_account_name" class="form-control @error('bank_account_name') is-invalid @enderror" placeholder="Bank account name" value="{{$user->userInfo->bank_account_name ?? old('bank_account_name')}}">
-                                    
-                                    @error('bank_account_name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                
-                                <div class="form-group">
-                                    <label for="bank_account_number">Bank Account Number</label>
-                                    <input type="text" name="bank_account_number" id="bank_account_number" class="form-control @error('bank_account_number') is-invalid @enderror" placeholder="Bank account number" value="{{$user->userInfo->bank_account_number ?? old('bank_account_number')}}">
-                                    
-                                    @error('bank_account_number')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                
-                                <div class="form-group">
-                                    <label for="branch_name">Branch Name</label>
-                                    <input type="text" name="branch_name" id="branch_name" class="form-control @error('branch_name') is-invalid @enderror" placeholder="Branch name" value="{{$user->userInfo->branch_name ?? old('branch_name')}}">
-                                    
-                                    @error('branch_name')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            $.each(xhr.responseJSON.errors, function (key, error) {
+                                $('small.'+key+'').text(error);
+                                $('#'+key+'').addClass('is-invalid');
+                            });
 
-                    <div class="col-md-6">
-                        <div class="card card-success">
-                            <div class="card-header">
-                                <h3 class="card-title">Bank Information (All field is optional)</h3>
-                            </div>
-                            <div class="card-body">
+                            if (typeof(xhr.responseJSON.message) !== 'undefined') {
+                                $.toast({
+                                    heading: 'Error',
+                                    text: xhr.responseJSON.message,
+                                    icon: 'error',
+                                    position: 'top-right',
+                                    stack: false
+                                });
+                            }
+                        }
 
-                                <div class="form-group">
-                                    <label for="bkash">Bkash</label>
-                                    <input type="number" name="bkash" id="bkash" class="form-control @error('bkash') is-invalid @enderror" placeholder="Bkash" value="{{$user->userInfo->bkash ?? old('bkash')}}">
-                                    
-                                    @error('bkash')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-            
-                                <div class="form-group">
-                                    <label for="nagad">Nagad</label>
-                                    <input type="number" name="nagad" id="nagad" class="form-control @error('nagad') is-invalid @enderror" placeholder="Nagad" value="{{$user->userInfo->nagad ?? old('nagad')}}">
-                                    
-                                    @error('nagad')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                
-                                <div class="form-group">
-                                    <label for="rocket">Rocket</label>
-                                    <input type="number" name="rocket" id="rocket" class="form-control @error('rocket') is-invalid @enderror" placeholder="Rocket" value="{{$user->userInfo->rocket ?? old('rocket')}}">
-                                    
-                                    @error('rocket')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="form-group">
-                    <button class="mt-1 btn btn-primary">
-                        @isset($user)
-                            <i class="fas fa-arrow-circle-up"></i>
-                            Update
-                        @else
-                            <i class="fas fa-plus-circle"></i>
-                            Submit
-                        @endisset
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <!-- /.card -->
-
-</section>
-<!-- /.content -->
-
-@endsection
-
-@push('js')
-    <script src="{{ asset('/assets/plugins/dropify/dropify.min.js') }}"></script>
-    <script>
-        
-        $(document).ready(function() {
-            $('#avatar').dropify();
-        });
-
-    </script>
-@endpush
+                    } else {
+                        return ('Uncaught Error.\n' + xhr.responseText);
+                    }
+                }
+            });
+        })
+    });
+</script>

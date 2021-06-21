@@ -19,4 +19,9 @@ class Video extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function daily_incomes()
+    {
+        return $this->hasMany(Dailyincome::class);
+    }
+
 }

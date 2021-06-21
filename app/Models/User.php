@@ -56,7 +56,6 @@ class User extends Authenticatable
     public function left()
     {
         return $this->children()->where(['direction' => Direction::Left])->first();
-        // return $this->children()->where('direction', 0);
     }
 
     public function middle()
@@ -159,6 +158,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the dailyIncomes for the user.
+     */
+    public function dailyIncomes()
+    {
+        return $this->hasMany(DailyIncome::class);
+    }
+
+    /**
      * Get the shareIncomes for the user.
      */
     public function shareIncomes()
@@ -215,11 +222,19 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the sendIncomeBalances for the user.
+     */
+    public function sendIncomeBalances()
+    {
+        return $this->hasMany(SendIncomeBalance::class);
+    }
+
+    /**
      * Get the sendShopBalances for the user.
      */
     public function sendShopBalances()
     {
-        return $this->hasMany(SendShopBalance::class);
+        return $this->hasMany(SendShopBalance::class, 'user_id');
     }
 
     /**

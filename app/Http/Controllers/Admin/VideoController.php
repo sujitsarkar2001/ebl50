@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Video;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class VideoController extends Controller
@@ -13,29 +14,18 @@ class VideoController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
-        $videos = Video::latest('id')->get();
-        return view('admin.video.index', compact('videos'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('admin.video.form');
+        return view('admin.video.index');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -52,7 +42,7 @@ class VideoController extends Controller
             mkdir('uploads/video', 0777, true);
         }
         $thumbnail->move(public_path('uploads/video'), $thumbnailName);
-        
+
         Video::create([
             'title'     => $request->title,
             'slug'      => Str::slug($request->title),
@@ -63,50 +53,48 @@ class VideoController extends Controller
             'month'     => date('F'),
             'year'      => date('Y')
         ]);
-
-        notify()->success("Video successfully added", "Success");
-        return redirect()->route('admin.video.index');
+        
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Video successfully added'
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
+     * @param Video $video
+     * @return Response
      */
     public function show(Video $video)
     {
-        if ($video->status) {
-            $video->update([
-                'status' => false
-            ]);
-        } else {
-            $video->update([
-                'status' => true
-            ]);
-        }
-        notify()->success("Video status successfully updated", "Success");
-        return back();
-        
+        return response()->json($video);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
+     * @param Video $video
+     * @return Response
      */
     public function edit(Video $video)
     {
-        return view('admin.video.form', compact('video'));
+        $status = $video->status ? false:true;
+        $video->status = $status;
+        $video->save();
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Video status successfully updated'
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Video $video
+     * @return Response
      */
     public function update(Request $request, Video $video)
     {
@@ -115,11 +103,11 @@ class VideoController extends Controller
             'link'      => 'required|url|max:255',
             'thumbnail' => 'nullable|image|max:1024|mimes:jpeg,jpg,png'
         ]);
-        
+
         $thumbnail = $request->file('thumbnail');
 
         if ($thumbnail) {
-            
+
             $currentDate   = Carbon::now()->toDateString();
             $thumbnailName = $currentDate.'-'.uniqid().'.'.$thumbnail->getClientOriginalExtension();
 
@@ -132,33 +120,35 @@ class VideoController extends Controller
             }
 
             $thumbnail->move(public_path('uploads/video'), $thumbnailName);
-
-        } else {
-            $thumbnailName = $video->thumbnail;
         }
-        
-        
+
+
         $video->update([
             'title'     => $request->title,
             'slug'      => Str::slug($request->title),
-            'thumbnail' => $thumbnailName,
-            'link'      => $request->link
+            'thumbnail' => $thumbnailName ?? $video->thumbnail,
+            'link'      => $request->link,
+            'rate'      => $request->rate
         ]);
 
-        notify()->success("Video successfully updated", "Success");
-        return redirect()->route('admin.video.index');
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Video successfully updated'
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Video  $video
-     * @return \Illuminate\Http\Response
+     * @param Video $video
+     * @return Response
      */
     public function destroy(Video $video)
     {
         $video->delete();
-        notify()->success("Video successfully deleted", "Success");
-        return back();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Video successfully deleted'
+        ]);
     }
 }

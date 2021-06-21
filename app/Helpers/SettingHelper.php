@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Setting;
+
 if (!function_exists('DummyFunction')) {
 
     /**
@@ -10,6 +12,6 @@ if (!function_exists('DummyFunction')) {
      */
     function setting($name, $default = null)
     {
-        return \App\Models\Setting::getByName($name, $default);
+        return Setting::getByName($name, $default);
     }
 }

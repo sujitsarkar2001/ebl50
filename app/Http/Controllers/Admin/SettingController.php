@@ -71,8 +71,10 @@ class SettingController extends Controller
         Setting::updateOrCreate(['name' => 'daily_income_bonus'], ['value' => $request->get('daily_income_bonus')]);
         Setting::updateOrCreate(['name' => 'copy_right_text'], ['value' => $request->get('copy_right_text')]);
         
-        notify()->success("Setting successfully updated", "Success");
-        return back();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Setting successfully updated'
+        ]);
     }
 
     public function updateLogo(Request $request)
@@ -138,7 +140,9 @@ class SettingController extends Controller
         Setting::updateOrCreate(['name' => 'auth_logo'], ['value' => $authLogoName]);
         Setting::updateOrCreate(['name' => 'favicon'], ['value' => $faviconName]);
         
-        notify()->success("Application logo successfully updated", "Success");
-        return back();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Application logo successfully updated'
+        ]);
     }
 }

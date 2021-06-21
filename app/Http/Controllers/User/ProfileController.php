@@ -11,26 +11,45 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    // Show Authenticated User Profile
+    /**
+     * Show Authenticated User Profile
+     *
+     * @return void
+     */
     public function index()
     {
-        return view('user.profile.index');
+        $member = auth()->user();
+        return view('user.profile.index', compact('member'));
     }
 
-    // Show Authenticated User Profile
+
+    /**
+     * Show Authenticated User Profile
+     *
+     * @return void
+     */
     public function showUpdateProfileForm()
     {
-        $user = Auth::user();
-        return view('user.profile.update', compact('user'));
+        $member = auth()->user();
+        return view('user.profile.update', compact('member'));
     }
 
-    // Show Change Password Form
+    /**
+     * Show Change Password Form
+     *
+     * @return void
+     */
     public function showChangePasswordForm()
     {
         return view('user.profile.password-change');
     }
 
-    // Update Password to Authenticated Admin
+    /**
+     * Update Password to Authenticated Admin
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function updatePassword(Request $request) {
         $this->validate($request, [
             'current_password' => 'required',
@@ -41,31 +60,39 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         if (Hash::check($request->current_password, $user->password)) {
-            
+
             if (!Hash::check($request->password, $user->password)) {
-                
+
                 $authUser = User::find($user->id);
                 $authUser->update([
                     'password' => Hash::make($request->password),
                 ]);
-                
+
                 Auth::logout();
-                notify()->success("Success", "Password Change Successfully");
-                
-                return back();
-                
+//                notify()->success("Success", "Password Change Successfully");
+
+                return response()->json([
+                    'alert'   => 'Success',
+                    'message' => 'Password Change Successfully'
+                ]);
+
             } else {
-                notify()->warning("Sorry!", "New password can't be same as current password! ⚡️");
+                return response()->json([
+                    'alert'   => 'Warning',
+                    'message' => 'New password can not be same as current password!'
+                ]);
             }
 
-        } else {
-            notify()->error("Wrong!", "Password does not match!!");
         }
 
-        return back();
-        
     }
 
+    /**
+     * update info
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function updateInfo(Request $request)
     {
         $this->validate($request, [
@@ -93,14 +120,14 @@ class ProfileController extends Controller
             'nagad'               => 'nullable|digits:11',
             'rocket'              => 'nullable|digits:11'
         ]);
-        
-        $user = User::findOrFail(Auth::user()->id);
-        
+
+        $user = User::findOrFail(auth()->id());
+
         $avatar = $request->file('avatar');
         if ($avatar) {
             $currentDate = Carbon::now()->toDateString();
             $imageName = $currentDate.'-'.uniqid().'.'.$avatar->getClientOriginalExtension();
-            
+
             if (file_exists('uploads/member/'.$user->avatar)) {
                 unlink('uploads/member/'.$user->avatar);
             }
@@ -110,18 +137,16 @@ class ProfileController extends Controller
             }
             $avatar->move(public_path('uploads/member'), $imageName);
 
-        } else {
-            $imageName = $user->avatar;
         }
 
         $user->update([
-            'name'      => $request->name,
-            'username'  => $request->username,
-            'email'     => $request->email,
-            'phone'     => $request->phone,
-            'avatar'    => $imageName
+            'name'     => $request->name,
+            'username' => $request->username,
+            'email'    => $request->email,
+            'phone'    => $request->phone,
+            'avatar'   => $imageName ?? $user->avatar
         ]);
-        
+
         $user->userInfo->update([
             "country"             => $request->country,
             "present_address"     => $request->present_address,
@@ -144,11 +169,12 @@ class ProfileController extends Controller
             "nagad"               => $request->nagad,
             "rocket"              => $request->rocket
         ]);
-        
-        notify()->success("Your profile info successfully updated", "Success");
-    
-        return redirect()->route('profile.index');
-        
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Your profile info successfully updated'
+        ]);
+
     }
 
 }

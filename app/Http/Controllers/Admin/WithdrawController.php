@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\GenerationIncome;
-use App\Models\LevelIncome;
-use App\Models\MoneyExchange;
-use App\Models\ShareIncome;
+use App\Models\IncomeBalance;
+use App\Models\SendIncomeBalance;
 use App\Models\SendShopBalance;
-use App\Models\ShopBalance;
 use App\Models\SiteIncome;
-use App\Models\SponsorIncome;
 use App\Models\User;
-use App\Models\Video;
 use App\Models\Withdraw;
 use Illuminate\Http\Request;
 
@@ -20,14 +15,13 @@ class WithdrawController extends Controller
 {
     public function index()
     {
-        $withdraws = Withdraw::latest('id')->get();
-        return view('admin.withdraw.index', compact('withdraws'));
+        return view('admin.withdraw.index');
     }
 
-    public function edit($id)
+    public function show($id)
     {
-        $withdraw = Withdraw::findOrFail($id);
-        return view('admin.withdraw.edit', compact('withdraw'));
+        $withdraw = Withdraw::where('id', $id)->where('status', false)->firstOrFail();
+        return response()->json($withdraw);
     }
 
     public function update(Request $request, $id)
@@ -45,12 +39,16 @@ class WithdrawController extends Controller
         $user        = User::find($withdraw->user_id);
         
         if (!$site_income) {
-            notify()->error("Sorry Something wrong", "Database Problem");
-            return back();
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'Sorry Something wrong, Database Problem'
+            ]);
         }
         if (!$user) {
-            notify()->error("Member not found", "Not Found");
-            return back();
+            return response()->json([
+                'alert'   => 'Error',
+                'message' => 'Member not found'
+            ]);
         }
 
         $user->incomeBalance->update([
@@ -95,10 +93,10 @@ class WithdrawController extends Controller
             $site_income->update([
                 'amount' => $site_income->amount + $charge
             ]);
-
-            notify()->success("Withdraw successfully updated", "Success");
-            return redirect()->route('admin.withdraw.index');
-
+            return response()->json([
+                'alert'   => 'Success',
+                'message' => 'Withdraw successfully updated'
+            ]);
 
         } else {
             $user->incomeBalance->update([
@@ -108,117 +106,53 @@ class WithdrawController extends Controller
             $site_income->update([
                 'amount' => $site_income->amount + $withdraw->charge
             ]);
-
-            notify()->warning("Member account has not enough balance", "Warning");
-            return back();
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'Member account has not enough balance'
+            ]);
         }
     }
 
     // Approved Withdraw
     public function approved($id)
     {
-        $withdraw = Withdraw::findOrFail($id);
+        $withdraw = Withdraw::where('id', $id)->where('status', false)->firstOrFail();
+        $withdraw->status = true;
+        $withdraw->save();
 
-        $withdraw->update([
-            'status' => true
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Withdraw amount successfully paid'
         ]);
-
-        notify()->success("Withdraw amount successfully paid", "Success");
-        return back();
     }
 
     // Show Income History
     public function showIncomeHistory()
     {
-        $sponsors      = SponsorIncome::latest('id')->get();
-        $levels        = LevelIncome::latest('id')->get();
-        $generations   = GenerationIncome::latest('id')->get();
-        $site_incomes  = SiteIncome::latest('id')->get();
-        $share_incomes = ShareIncome::latest('id')->get();
-        $users         = User::get();
-        $dailies = [];
-        foreach($users as $user) {
-            $dailies[$user->id] = $user->videos()->orderBy('id', 'desc')->get();
-        }
-        // return $dailies;
-        return view('admin.withdraw.income-history', compact(
-            'share_incomes',
-            'site_incomes',
-            'generations',
-            'sponsors',
-            'dailies',
-            'users',
-            'levels'
-        ));
-    }
-
-    public function searchIncomeHistory(Request $request)
-    {
-        // This Filter function define is AppServiceProvider Class...
-        $user = User::filter('username', 'username')
-                    ->filter('referer_id', 'refer_id')
-                    ->first();
-        $from_date = $request->filled('from_date');
-        $to_date   = $request->filled('to_date');
-
-        if ($from_date != '' && $to_date != '') {
-
-            $sponsors  = $user->sponsorIncomes
-                        ->where('date', '>=', $from_date)
-                        ->where('date', '<=', $to_date);
-            $generations  = $user->generationIncomes
-                        ->where('date', '>=', $from_date)
-                        ->where('date', '<=', $to_date);
-            $site_incomes = $user->siteIncomes
-                        ->where('created_at', '>=', $from_date);
-            $share_incomes = $user->shareIncomes
-                        ->where('date', '>=', $from_date)
-                        ->where('date', '<=', $to_date);
-            $levels  = $user->levelIncomes
-                        ->where('date', '>=', $from_date)
-                        ->where('date', '<=', $to_date);
-            $dailies  = $user->videos
-                        ->where('date', '>=', $from_date)
-                        ->where('date', '<=', $to_date);
-        } else {
-            $sponsors      = $user->sponsorIncomes()->orderBy('id', 'desc')->get();
-            $generations   = $user->generationIncomes()->orderBy('id', 'desc')->get();
-            $site_incomes  = $user->siteIncomes()->orderBy('id', 'desc')->get();
-            $share_incomes = $user->shareIncomes()->orderBy('id', 'desc')->get();
-            $levels        = $user->levelIncomes()->orderBy('id', 'desc')->get();
-            $dailies       = $user->videos()->orderBy('id', 'desc')->get();
-        }
-        
-        return redirect(route('admin.withdraw.income.history'))
-                ->with('sponsors', $sponsors)
-                ->with('generations', $generations)
-                ->with('site_incomes', $site_incomes)
-                ->with('share_incomes', $share_incomes)
-                ->with('levels', $levels)
-                ->with('dailies', $dailies)
-                ->with('user', $user);
+        return view('admin.withdraw.income-history');
     }
 
     public function showMoneyExchangeList()
     {
-        $exchanges = MoneyExchange::latest('id')->get();
-        return view('admin.withdraw.money-exchange-list', compact('exchanges'));
+        return view('admin.withdraw.money-exchange');
     }
 
-    // Give Shop Balance to Single User
+    /**
+     * shop balance history
+     *
+     * @return void
+     */
     public function shopBalance()
     {
-        $send_shop_balances = SendShopBalance::latest('id')->get();
-        return view('admin.withdraw.shop-balance-list', compact('send_shop_balances'));
+        return view('admin.withdraw.shop-balance');
     }
 
-    // Show Give Shop Balance Form
-    public function showShopBalanceForm()
-    {
-        return view('admin.withdraw.send-shop-balance');
-    }
-
-    // Store Shop Balance
+    /**
+     * store shop balance
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function storeShopBalance(Request $request)
     {
         $this->validate($request, [
@@ -227,11 +161,13 @@ class WithdrawController extends Controller
         ]);
 
         if ($request->username == auth()->user()->username) {
-            notify()->warning("You does no send shop balance in your self account", "Wrong Policy");
-            return back();
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'You does no send shop balance in your self account'
+            ]);
         }
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('is_admin', false)->where('username', $request->username)->first();
         if ($user) {
 
             SendShopBalance::create([
@@ -244,13 +180,93 @@ class WithdrawController extends Controller
                 'amount' => $user->shopBalance->amount + $request->amount
             ]);
 
-            notify()->success("User send shop balance successfully", "Success");
-            return redirect()->route('admin.withdraw.shop.balance');
+            return response()->json([
+                'alert'   => 'Success',
+                'message' => 'User send shop balance successfully'
+            ]);
         }
         else {
-            notify()->warning("User not found", "Warning");
-            return back();
+            return response()->json([
+                'alert'   => 'Warning',
+                'message' => 'User not found'
+            ]);
         }
         
+    }
+
+    
+    /**
+     * income balance history
+     *
+     * @return void
+     */
+    public function incomeBalance()
+    {
+        return view('admin.withdraw.income-balance');
+    }
+    
+    /**
+     * income balance info
+     *
+     * @return void
+     */
+    public function incomeBalanceInfo()
+    {
+        $users = User::where('is_admin', false)->where('is_approved', true)->get(['id', 'username']);
+        return response()->json($users);
+    }
+
+    /**
+     * store income balance
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function storeIncomeBalance(Request $request)
+    {
+        $this->validate($request, [
+            'type'       => 'required|max:30',
+            'username'   => 'nullable|array',
+            'username.*' => 'integer',
+            'amount'      => 'required|integer'
+        ]);
+
+        if ($request->type == 'Individual') {
+            $users = User::where('is_admin', false)->whereIn('id', $request->username)->where('is_approved', true)->get();
+        
+        } else {
+            $users = User::where('is_admin', false)->where('is_approved', true)->get();
+        }
+        
+        foreach ($users as $user)
+        {
+            SendIncomeBalance::create([
+                'user_id' => $user->id,
+                'amount'  => $request->amount,
+                'details' => $request->details
+            ]);
+            
+            $income_balance = IncomeBalance::where('user_id', $user->id)->first(); 
+            $income_balance->amount = $income_balance->amount + $request->amount;
+            $income_balance->save();
+        }
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Successfully send income balance in user amount'
+        ]);
+    }
+    
+    /**
+     * show income balance details
+     *
+     * @param  mixed $id
+     * @return void
+     */
+    public function showIncomeBalance($id)
+    {
+        $data = SendIncomeBalance::findOrFail($id, ['details']);
+
+        return response()->json($data);
     }
 }

@@ -17,5 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(PageSeeder::class);
+        // \App\Models\User::factory()->count(3998)->create();
+        // $this->call(TestSeeder::class);
     }
 }

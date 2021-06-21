@@ -84,7 +84,7 @@
 		idregex : /[\\:&!^|()\[\]<>@*'+~#";.,=\- \/${}%?`]/g,
 		root : '#'
 	};
-	
+
 	/**
 	 * creates a jstree instance
 	 * @name $.jstree.create(el [, options])
@@ -454,7 +454,7 @@
 		 */
 		restore_focus : true,
 		/**
-		 * Force to compute and set "aria-setsize" and "aria-posinset" explicitly for each treeitem. 
+		 * Force to compute and set "aria-setsize" and "aria-posinset" explicitly for each treeitem.
 		 * Some browsers may compute incorrect elements position and produce wrong announcements for screen readers. Defaults to `false`
 		 * @name $.jstree.defaults.core.compute_elements_positions
 		 */
@@ -887,7 +887,7 @@
 									return false;
 								}
 							}, this));
-							if(end) { return; }
+							if(end) {  }
 						}
 					}, this))
 				// THEME RELATED
@@ -4963,7 +4963,7 @@
 		return d;
 	};
 	$.vakata.trim = function (text) {
-		return String.prototype.trim ? 
+		return String.prototype.trim ?
 			String.prototype.trim.call(text.toString()) :
 			text.toString().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
 	};

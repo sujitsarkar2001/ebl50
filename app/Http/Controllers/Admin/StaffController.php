@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -13,7 +14,7 @@ class StaffController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -24,7 +25,7 @@ class StaffController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -34,8 +35,8 @@ class StaffController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -52,7 +53,6 @@ class StaffController extends Controller
             'placement_id'      => 0,
             'direction'         => 0,
             'name'              => $request->name,
-            'referer_id'        => 0,
             'username'          => $request->username,
             'email'             => $request->email,
             'phone'             => $request->phone,
@@ -66,28 +66,29 @@ class StaffController extends Controller
             'remember_token'    => Str::random(10)
         ]);
 
-        notify()->success("Staff successfully added", "Success");
-        return redirect()->route('admin.staff.index');
-
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Staff successfully added'
+        ]);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
-        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail();
-        return view('admin.staff.show', compact('staff'));
+        $staff = User::where('id', $id)->where('is_admin', true)->firstOrFail(['id', 'name', 'username', 'email', 'phone']);
+        return response()->json($staff);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -98,9 +99,9 @@ class StaffController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -119,15 +120,17 @@ class StaffController extends Controller
             'phone'    => $request->phone
         ]);
 
-        notify()->success("Staff successfully updated", "Success");
-        return redirect()->route('admin.staff.index');
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Staff successfully updated'
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
@@ -135,7 +138,10 @@ class StaffController extends Controller
         if (file_exists('uploads/member/'.$staff->avatar)) {
             unlink('uploads/member/'.$staff->avatar);
         }
-        notify()->success("User successfully deleted", "Success");
-        return back();
+        $staff->delete();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Staff successfully deleted'
+        ]);
     }
 }

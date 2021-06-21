@@ -11,7 +11,7 @@ class IncomeBalance extends Model
 
     protected $guarded = ['id'];
 
-     /**
+    /**
      * Get the user that owns the income balance.
      */
     public function user()

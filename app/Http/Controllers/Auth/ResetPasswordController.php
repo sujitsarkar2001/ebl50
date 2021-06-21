@@ -30,7 +30,7 @@ class ResetPasswordController extends Controller
      * @var string
      */
     protected $redirectTo = '/login';
-    
+
     public function showResetForm(Request $request)
     {
         $token = $request->route()->parameter('token');
@@ -47,15 +47,14 @@ class ResetPasswordController extends Controller
             'password' => 'required|confirmed|min:8'
         ]);
 
-        $user = User::where('username', $request->username)->first();
-        if ($user) {
-            $user->update([
-                'password' => Hash::make($request->password)
-            ]);
-            return redirect()->route('login');
-        } else {
-            return back()->with('status', 'Sorry!!, Something wrong');
-        }
+        $user = User::where('username', $request->username)->firstOrFail();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Your password reset successfully, please login'
+        ]);
     }
-    
+
 }

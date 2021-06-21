@@ -1,15 +1,19 @@
-@foreach ($user->referrals as $user)
-    @if ($user->referrals->count() > 0)
+@foreach ($member->referrals as $data)
+    @if ($member->referrals->count() > 0)
         <li>
-            <span class="caret"><a href="{{route('team.profile', $user->id)}}">{{$user->username}}</a></span>
+            <span class="caret">
+                <a href="{{route('team.profile', $data->username)}}" id="view-page">{{$data->name}} ({{$data->username}})</a>
+            </span>
             <ul class="nested">
-                @include('user.list-view.one', ['user' => $user])
+                @include('user.list-view.one', ['member' => $data])
             </ul>
-        </li> 
+        </li>
     @else
     <li>
-        <span><a href="{{route('team.profile', $user->id)}}">{{$user->username}}</a></span>
-    </li> 
+        <span>
+            <a href="{{route('team.profile', $data->username)}}" id="view-page">{{$data->name}} ({{$data->username}})</a>
+        </span>
+    </li>
     @endif
-    
+
 @endforeach

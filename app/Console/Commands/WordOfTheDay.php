@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\LevelIncome;
+use App\Models\User;
+use App\Models\Video;
 use Illuminate\Console\Command;
 
 class WordOfTheDay extends Command
@@ -38,68 +39,65 @@ class WordOfTheDay extends Command
      */
     public function handle()
     {
-        $users = \App\Models\User::where('is_admin', false)->where('is_approved', true)->get();
+        $elite_users           = User::where('level', 'Elite')->where('is_admin', false)->get();
+        $executive_elite_users = User::where('level', 'Executive Elite')->where('is_admin', false)->get();
+        $executive_users       = User::where('level', 'Executive')->where('is_admin', false)->get();
+        
 
-        foreach ($users as $user) {
+        foreach ($elite_users as $user) {
 
-            // $level = level($user);
-
-            if ($user->level == 'Elite') {
-                $amount = setting('level_one_bonus');
-                // Insert data to level_incomes table
-                $user->levelIncomes()->create([
-                    'amount' => $amount,
-                    'date'   => date('Y-m-d'),
-                    'month'  => date('F'),
-                    'year'   => date('Y')
-                ]);
-
-                // Update income_balances table data
-                $user->incomeBalance()->update([
-                    'amount' => $user->incomeBalance->amount + $amount
-                ]);
-            } 
-            else if ($user->level == 'Executive Elite') {
-                $amount = setting('level_two_bonus');
-                // Insert data to level_incomes table
-                $user->levelIncomes()->create([
-                    'amount' => $amount,
-                    'date'   => date('Y-m-d'),
-                    'month'  => date('F'),
-                    'year'   => date('Y')
-                ]);
-
-                // Update income_balances table data
-                $user->incomeBalance()->update([
-                    'amount' => $user->incomeBalance->amount + $amount
-                ]);
-            }
-            else if ($user->level == 'Executive') {
-                $amount = setting('level_three_bonus');
-                // Insert data to level_incomes table
-                $user->levelIncomes()->create([
-                    'amount' => $amount,
-                    'date'   => date('Y-m-d'),
-                    'month'  => date('F'),
-                    'year'   => date('Y')
-                ]);
-
-                // Update income_balances table data
-                $user->incomeBalance()->update([
-                    'amount' => $user->incomeBalance->amount + $amount
-                ]);
-            }
-        }
-
-        // Update Video Status
-        $videos = \App\Models\Video::where('status', true)->get();
-
-        foreach ($videos as $video) {
-            $video->update([
-                'status' => false
+            $amount = setting('level_one_bonus');
+            $user->levelIncomes()->create([
+                'amount'     => $amount,
+                'date'       => date('Y-m-d'),
+                'month'      => date('F'),
+                'year'       => date('Y'),
+                'level_name' => $user->level
+            ]);
+            $user->incomeBalance()->update([
+                'amount' => $user->incomeBalance->amount + $amount
             ]);
         }
 
-        $this->info($this->description);
+        foreach ($executive_elite_users as $user) {
+
+            $amount = setting('level_two_bonus');
+            $user->levelIncomes()->create([
+                'amount'     => $amount,
+                'date'       => date('Y-m-d'),
+                'month'      => date('F'),
+                'year'       => date('Y'),
+                'level_name' => $user->level
+            ]);
+            $user->incomeBalance()->update([
+                'amount' => $user->incomeBalance->amount + $amount
+            ]);
+        }
+
+        foreach ($executive_users as $user) {
+
+            $amount = setting('level_three_bonus');
+            $user->levelIncomes()->create([
+                'amount'     => $amount,
+                'date'       => date('Y-m-d'),
+                'month'      => date('F'),
+                'year'       => date('Y'),
+                'level_name' => $user->level
+            ]);
+            $user->incomeBalance()->update([
+                'amount' => $user->incomeBalance->amount + $amount
+            ]);
+        }
+
+
+        // Update Video Status
+        $videos = Video::where('status', true)->get();
+
+        foreach ($videos as $video) {
+            $video->status = false;
+            $video->save();
+        }
+
+        $this->info($this->description.' '.$elite_users->count());
     }
 }

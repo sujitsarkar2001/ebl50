@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class WordOfTheShare extends Command
@@ -37,17 +38,17 @@ class WordOfTheShare extends Command
      */
     public function handle()
     {
-        $users = \App\Models\User::where('is_admin', false)->where('is_approved', true)->get();
+        $users = User::where('is_admin', false)->where('is_approved', true)->get();
 
         foreach ($users as $user) {
-            
+
             $percentage   = setting('share_package_bonus');
             $total_amount = $user->register_package;
 
             $amount = round($percentage * ($total_amount / 100), 2);
 
             if ($total_amount >= setting('share_package')) {
-                
+
                 // Insert data to share_incomes table
                 $user->shareIncomes()->create([
                     'amount' => $amount,

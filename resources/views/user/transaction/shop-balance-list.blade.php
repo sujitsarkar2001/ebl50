@@ -1,156 +1,159 @@
-@extends('layouts.user.app')
-
-@section('title', 'Shop Balance History')
-
-@push('css')
-    <!-- DataTables -->
-  <link rel="stylesheet" href="/assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="/assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-@endpush
-
-@section('content')
-
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Shop Balance History</h1>
+<style>
+    .project-tab {
+        padding: 10%;
+        margin-top: -8%;
+    }
+    .project-tab #tabs{
+        background: #007b5e;
+        color: #eee;
+    }
+    .project-tab #tabs h6.section-title{
+        color: #eee;
+    }
+    .project-tab #tabs .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+        color: #0062cc;
+        background-color: transparent;
+        border-color: transparent transparent #f3f3f3;
+        border-bottom: 3px solid !important;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .project-tab .nav-link {
+        border: 1px solid transparent;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+        color: #0062cc;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .project-tab .nav-link:hover {
+        border: none;
+    }
+    .project-tab thead{
+        background: #f3f3f3;
+        color: #333;
+    }
+    .project-tab a{
+        text-decoration: none;
+        color: #333;
+        font-weight: 600;
+    }
+</style>
+<div class="History">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <nav>
+                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-send" data-toggle="tab" href="#send" role="tab" aria-controls="send" aria-selected="true">Send</a>
+                        <a class="nav-item nav-link" id="nav-receive" data-toggle="tab" href="#receive" role="tab" aria-controls="receive" aria-selected="false">Receive</a>
+                    </div>
+                </nav>
             </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">Shop Balance History</li>
-                </ol>
-            </div>
-        </div>
-    </div><!-- /.container-fluid -->
-</section>
-
-<!-- Main content -->
-<section class="content">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h3 class="card-title">Send Shop Balance History</h3>
+            <div class="col-12">
+                <div class="tab-content mt-3" id="nav-tabContent">
+                    
+                    <div class="tab-pane fade show active" id="send" role="tabpanel" aria-labelledby="nav-send">
+                        <div class="card p-0">
+                            <div class="card-header">
+                                <h4 class="card-title">Send Shop Balance History</h4>
+                            </div>
+                            <div class="card-body">
+                                <table id="example" class="table table-bordered table-hover" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($send_shop_balances as $key => $data)
+                                            <tr>
+                                                <td>{{$key + 1}}</td>
+                                                <td>{{$data->user->name}}</td>
+                                                <td>{{$data->user->username}}</td>
+                                                <td>{{$data->amount}}</td>
+                                                <td>{{date('d M Y', strtotime($data->created_at))}}</td>
+                                                
+                                            </tr>
+                                        @endforeach
+                                        
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="text-right">Total: </th>
+                                            <th>{{$send_shop_balances->sum('amount')}} </th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-sm-6 text-right">
-                            <a href="{{route('shop.balance.create')}}" class="btn btn-success">
-                                <i class="fas fa-plus-circle"></i>
-                                Send Shop Balance
-                            </a>
+                    </div>
+
+                    <div class="tab-pane fade show" id="receive" role="tabpanel" aria-labelledby="nav-receive">
+                        <div class="card p-0">
+                            <div class="card-header">
+                                <h4 class="card-title">Receive Shop Balance History</h4>
+                            </div>
+                            <div class="card-body">
+                                <table id="example2" class="table table-bordered table-hover" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($receive_shop_balances as $key => $data)
+                                            <tr>
+                                                <td>{{$key + 1}}</td>
+                                                <td>{{$data->parent_user->name}}</td>
+                                                <td>{{$data->parent_user->username}}</td>
+                                                <td>{{$data->amount}}</td>
+                                                
+                                                <td>{{date('d M Y', strtotime($data->created_at))}}</td>
+                                                
+                                            </tr>
+                                        @endforeach
+                                        
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="text-right">Total: </th>
+                                            <th>{{$receive_shop_balances->sum('amount')}} </th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <table id="example1" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($give_shop_balances as $key => $data)
-                                <tr>
-                                    <td>{{$key + 1}}</td>
-                                    <td>{{$data->user->name}}</td>
-                                    <td>{{$data->user->username}}</td>
-                                    <td>{{$data->amount}}</td>
-                                    
-                                    <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                    
-                                </tr>
-                            @endforeach
-                            
-                        </tbody>
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Total: {{$give_shop_balances->sum('amount')}} </th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <!-- /.card-body -->
             </div>
-              <!-- /.card -->  
+
         </div>
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Receive Shop Balance History</h3>
-                        
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <table id="example2" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($receive_shop_balances as $key => $data)
-                                <tr>
-                                    <td>{{$key + 1}}</td>
-                                    <td>{{$data->parent_user->name}}</td>
-                                    <td>{{$data->parent_user->username}}</td>
-                                    <td>{{$data->amount}}</td>
-                                    
-                                    <td>{{date('d-m-Y', strtotime($data->created_at))}}</td>
-                                    
-                                </tr>
-                            @endforeach
-                            
-                        </tbody>
-                        <thead>
-                            <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Total: {{$receive_shop_balances->sum('amount')}} </th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-            </div>
-              <!-- /.card -->  
-        </div>
-    </div>
-      
+   </div>
+</div>
 
-</section>
-<!-- /.content -->
+<script>
+    $('#example').DataTable( {
+        rowReorder: {
+            selector: 'td:nth-child(2)'
+        },
+        responsive: true
+    });
 
-@endsection
-
-@push('js')
-    <!-- DataTables  & Plugins -->
-    <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script>
-        $(function () { 
-            $("#example1").DataTable();
-            $("#example2").DataTable();
-        })
-    </script>
-@endpush
+    $('#example2').DataTable( {
+        rowReorder: {
+            selector: 'td:nth-child(2)'
+        },
+        responsive: true
+    });
+</script>

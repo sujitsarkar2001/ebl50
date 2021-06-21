@@ -6,19 +6,16 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
-        <link rel="shortcut icon" type="image/jpg" href="/uploads/setting/{{setting('favicon')}}"/>
+        <link rel="shortcut icon" type="image/jpg" href="{{asset('/')}}uploads/setting/{{setting('favicon')}}"/>
 
         <title>@yield('title')</title>
 
         <!-- Google Font: Source Sans Pro -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.min.css">
+        <link rel="stylesheet" href="{{asset('/')}}assets/plugins/fontawesome-free/css/all.min.css">
         
-        <!-- pace-progress -->
-        {{-- <link rel="stylesheet" href="/assets/plugins/pace-progress/themes/black/pace-theme-flat-top.css"> --}}
-        
-        @notifyCss
+        <link rel="stylesheet" href="{{asset('/')}}assets/frontend/css/toast.min.css">
 
         @stack('css')
 
@@ -26,6 +23,31 @@
         <link rel="stylesheet" href="/assets/dist/css/adminlte.min.css">
         <style>
             div.fixed.inset-0.flex.items-end.justify-center {z-index: 999999;}
+            .loader {
+                border: 5px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 5px solid blue;
+                border-right: 5px solid green;
+                border-bottom: 5px solid red;
+                border-left: 5px solid pink;
+                width: 50px;
+                height: 50px;
+                -webkit-animation: spin 2s linear infinite;
+                animation: spin 2s linear infinite;
+                position: fixed;
+                top: 23%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            @-webkit-keyframes spin {
+                0% { -webkit-transform: rotate(0deg); }
+                100% { -webkit-transform: rotate(360deg); }
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
         </style>
     </head>
     <body class="hold-transition sidebar-mini">
@@ -48,6 +70,8 @@
             </div>
             <!-- /.content-wrapper -->
 
+            <div class="loader d-none"></div>
+
             <!-- Footer -->
                 <x-footer-component></x-footer-component>
             <!-- /.footer -->
@@ -61,22 +85,18 @@
         <!-- ./wrapper -->
 
         <!-- jQuery -->
-        <script src="/assets/plugins/jquery/jquery.min.js"></script>
+        <script src="{{asset('/')}}assets/plugins/jquery/jquery.min.js"></script>
         <!-- Bootstrap 4 -->
-        <script src="/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="{{asset('/')}}assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- AdminLTE App -->
-        <script src="/assets/dist/js/adminlte.min.js"></script>
+        <script src="{{asset('/')}}assets/dist/js/adminlte.min.js"></script>
         <!-- AdminLTE for demo purposes -->
         
-        <!-- pace-progress -->
-        {{-- <script src="/assets/plugins/pace-progress/pace.min.js"></script> --}}
-
-        <x:notify-messages />
-        @notifyJs
 
         @stack('js')
 
-        <script src="/assets/dist/js/demo.js"></script>
+        <script src="{{asset('/')}}assets/frontend/js/toast.min.js"></script>
+        <script src="{{asset('/')}}assets/dist/js/demo.js"></script>
         <script>
             $(document).ready(function () {
                 function countNewMessage(){

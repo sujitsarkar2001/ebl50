@@ -8,7 +8,6 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto mr-3">
-        {{-- <x-chat-component></x-chat-component> --}}
 
         <li class="nav-item" id="countMessage">
             <a class="nav-link" href="{{route('admin.connection.live.chat')}}">

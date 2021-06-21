@@ -24,19 +24,21 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'sponsor_id' => 0,
-            'placement_id' => 0,
-            'direction' => 0,
-            'name' => 'Admin',
-            'referer_id' => 0,
-            'username' => 'admin',
-            'email' => 'admin@gmail.com',
-            'phone' => '01749699156',
-            'is_admin' => true,
-            'is_approved' => true,
-            'joining_date' => date('Y-m-d'),
-            'joining_month' => date('F'),
-            'joining_year' => date('Y'),
+            'sponsor_id' => rand(2, 4000),
+            'placement_id' => rand(2, 4000),
+            'direction' => rand(1, 3),
+            'level' => 'No Level',
+            'next_level_bonus' => date('Y-m-d'),
+            'name' => $this->faker->name,
+            'referer_id' => rand(pow(10, 5-1), pow(10, 5)-1),
+            'username' => $this->faker->username,
+            'email' => $this->faker->email,
+            'phone' => $this->faker->phoneNumber,
+            'is_admin' => false,
+            'is_approved' => $this->faker->boolean,
+            'joining_date' => $this->faker->date(),
+            'joining_month' => $this->faker->date('F'),
+            'joining_year' => $this->faker->date('Y'),
             'email_verified_at' => now(),
             'password' => Hash::make('12345678'),
             'remember_token' => Str::random(10)
@@ -46,7 +48,7 @@ class UserFactory extends Factory
     /**
      * Indicate that the model's email address should be unverified.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     * @return Factory
      */
     public function unverified()
     {

@@ -17,7 +17,6 @@ class CreateSponsorIncomesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->decimal('amount', 20, 2);
-            $table->boolean('status')->default(true);
             $table->date('date');
             $table->string('month', 15);
             $table->year('year');

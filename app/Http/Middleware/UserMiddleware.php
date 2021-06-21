@@ -11,14 +11,14 @@ class UserMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->is_admin == false) {
-            
+
             if (Auth::user()->is_approved == false) {
                 Auth::logout();
                 return back()->with('warning', 'Your account is pending, admin check your information');
@@ -28,7 +28,7 @@ class UserMiddleware
             } else {
                 return $next($request);
             }
-            
+
         } else {
             return Redirect()->route('login');
         }

@@ -12,40 +12,60 @@ use Illuminate\Support\Facades\Mail;
 
 class CorrectionController extends Controller
 {
-    // Show Contact list
-    public function showContactForm()
+    /**
+     * contact list
+     *
+     * @return void
+     */
+    public function contact()
     {
-        $contacts = Contact::latest('id')->get();
-        return view('admin.connection.contact', compact('contacts'));
+        return view('admin.connection.contact');
     }
 
-    // Delete Contact
+    /**
+     * delete contact
+     *
+     * @param  mixed $id
+     * @return void
+     */
     public function destroyContact($id)
     {
         Contact::findOrFail($id)->delete();
-        
-        notify()->success("Contact successfully deleted", "Success");
-        return back();
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Contact successfully deleted'
+        ]);
     }
 
-    // Delete Contact
+    /**
+     * show contact
+     *
+     * @param  mixed $id
+     * @return void
+     */
     public function showContact($id)
     {
-        $contact = Contact::findOrFail($id);
-        return view('admin.connection.show', compact('contact'));
+        $contact = Contact::with(
+            array(
+                'user' => function($query) {
+                    $query->select('id', 'username', 'name', 'referer_id');
+                },
+                'contact_replies'
+            )
+        )->findOrFail($id);
+        return response()->json($contact);
     }
 
-    // Reply Contact Form
-    public function showReplyContactForm($id)
+    /**
+     * replyContact
+     *
+     * @param  mixed $request
+     * @param  mixed $id
+     * @return void
+     */
+    public function replyContact(Request $request, $id)
     {
         $contact = Contact::findOrFail($id);
-        return view('admin.connection.reply', compact('contact'));
-    }
-
-    // Reply Contact
-    public function replyContact(Request $request)
-    {
-        $contact = Contact::findOrFail($request->contact_id);
         
         $this->validate($request, [
             'from'    => 'required|string|email',
@@ -80,9 +100,10 @@ class CorrectionController extends Controller
             'status' => true
         ]);
         
-        
-        notify()->success("Congratulations!! Contact reply successfully done", "Success");
-        return redirect(route('admin.connection.contact'));
+        return response()->json([
+            'alert'   => 'Success',
+            'message' => 'Contact reply successfully done'
+        ]);
 
     }
 

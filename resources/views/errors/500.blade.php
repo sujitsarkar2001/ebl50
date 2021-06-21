@@ -1,57 +1,40 @@
-@if (auth()->user()->is_admin == true)
-    @php
-        $app   = 'layouts.admin.app';
-        $route = route('admin.dashboard');
-    @endphp
-@else
-    @php
-        $app   = 'layouts.user.app';
-        $route = route('dashboard');
-    @endphp
-@endif
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>505 Not Found</title>
 
-@extends($app)
-
-
-
-@section('title', 'Contact')
-
-@section('content')
-
-<!-- Content Header (Page header) -->
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="">500 Error Page</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="{{$route}}">Home</a></li>
-                <li class="breadcrumb-item active">500 Error Page</li>
-                </ol>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+    <style>
+        body { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAxMC8yOS8xMiKqq3kAAAAcdEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzVxteM2AAABHklEQVRIib2Vyw6EIAxFW5idr///Qx9sfG3pLEyJ3tAwi5EmBqRo7vHawiEEERHS6x7MTMxMVv6+z3tPMUYSkfTM/R0fEaG2bbMv+Gc4nZzn+dN4HAcREa3r+hi3bcuu68jLskhVIlW073tWaYlQ9+F9IpqmSfq+fwskhdO/AwmUTJXrOuaRQNeRkOd5lq7rXmS5InmERKoER/QMvUAPlZDHcZRhGN4CSeGY+aHMqgcks5RrHv/eeh455x5KrMq2yHQdibDO6ncG/KZWL7M8xDyS1/MIO0NJqdULLS81X6/X6aR0nqBSJcPeZnlZrzN477NKURn2Nus8sjzmEII0TfMiyxUuxphVWjpJkbx0btUnshRihVv70Bv8ItXq6Asoi/ZiCbU6YgAAAABJRU5ErkJggg==);}
+        .error-template {padding: 40px 15px;text-align: center;}
+        .error-actions {margin-top:15px;margin-bottom:15px;}
+        .error-actions .btn { margin-right:10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-template">
+                    <h1>
+                        Oops!</h1>
+                    <h2>
+                        505 Not Found</h2>
+                    <div class="error-details">
+                        Sorry, an error has occured, Requested page not found!
+                    </div>
+                    <div class="error-actions">
+                        <a href="{{route('login')}}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home mr-2"></span>Take Me Home </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div><!-- /.container-fluid -->
-</section>
-
-<!-- Main content -->
-<section class="content">
-    <div class="error-page">
-        <h2 class="headline text-warning"> 500</h2>
-
-        <div class="error-content">
-            <h3><i class="fas fa-exclamation-triangle text-danger"></i> Oops! Something went wrong.</h3>
-
-            <p>
-                We will work on fixing that right away. Meanwhile, you may <a href="{{$route}}">return to dashboard</a> or try using the search form.
-                We could not find the page you were looking for.
-            </p>
-        </div>
-        <!-- /.error-content -->
     </div>
-    <!-- /.error-page -->
-</section>
-<!-- /.content -->
-
-@endsection
+</body>
+</html>
